@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronsLeftRight, ArrowRight, Sparkles } from 'lucide-react';
 
 export const BeforeAfterComparison: React.FC = () => {
   const trackRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-
   const [scrollProgress, setScrollProgress] = useState(0);
   const [sliderPos, setSliderPos] = useState(0);
   const [isManualDrag, setIsManualDrag] = useState(false);
@@ -44,9 +44,6 @@ export const BeforeAfterComparison: React.FC = () => {
 
       // Automatically map scroll progress to slider split when not manually dragged
       if (!isManualDrag) {
-        // Phase 1 (0.00 - 0.12): Raw sensor holds
-        // Phase 2 (0.12 - 0.72): Laser split sweeps from 0% to 100%
-        // Phase 3 (0.72 - 1.00): Master 4K hold & macro zoom
         if (progress < 0.12) {
           setSliderPos(0);
         } else if (progress > 0.72) {
@@ -100,218 +97,279 @@ export const BeforeAfterComparison: React.FC = () => {
 
   // Derived animation states
   const macroZoom = scrollProgress > 0.72 ? 1 + (scrollProgress - 0.72) * 0.12 : 1;
-  const metricsOpacity = Math.max(0, Math.min(1, (scrollProgress - 0.55) / 0.35));
-  const metricsTranslateY = (1 - metricsOpacity) * 20;
 
   return (
-    <section id="before-after" ref={trackRef} className="relative h-[260vh] bg-[#020202] text-white">
+    <section id="before-after" className="relative bg-[#020202] text-white border-b border-hairline">
       
-      {/* Sticky Viewport Stage */}
-      <div className="sticky top-0 h-screen w-full flex flex-col justify-between py-6 sm:py-8 md:py-10 px-4 sm:px-8 md:px-12 overflow-hidden select-none z-10">
+      {/* 1. Sticky Scroll-Driven Metamorphosis Stage */}
+      <div ref={trackRef} className="relative h-[180vh]">
         
-        {/* Subtle Ambient Atmosphere Glow */}
-        <div className="absolute inset-0 bg-radial-gradient from-accent/[0.035] via-transparent to-transparent pointer-events-none" />
-        <div
-          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-accent/[0.03] blur-[120px] rounded-full pointer-events-none transition-opacity duration-700"
-          style={{ opacity: 0.3 + scrollProgress * 0.7 }}
-        />
-
-        {/* ============================================================== */}
-        {/* TOP BAR: HEADER & SCROLL PROGRESS SCRUBBER                    */}
-        {/* ============================================================== */}
-        <div className="max-w-6xl mx-auto w-full pt-8 sm:pt-10 text-center relative z-20">
+        {/* Sticky Viewport Stage (Clean, spacious, uncrowded) */}
+        <div className="sticky top-0 h-screen w-full flex flex-col justify-between py-5 sm:py-7 md:py-9 px-4 sm:px-8 md:px-12 overflow-hidden select-none z-10">
           
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-2">
-            <Sparkles className="w-3 h-3 text-accent" />
-            <span>SCROLL-DRIVEN METAMORPHOSIS</span>
-          </div>
-
-          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-none mb-2">
-            From raw phone snap to <span className="italic font-light text-accent">campaign master.</span>
-          </h2>
-
-          <p className="text-white/50 text-xs sm:text-sm font-sans font-light max-w-lg mx-auto hidden sm:block">
-            Scroll down to drive the neural synthesis pipeline in real time.
-          </p>
-
-          {/* Luxury Scroll Track Indicator */}
-          <div className="flex items-center justify-center gap-3 mt-3">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">
-              01 Raw Sensor
-            </span>
-            <div className="w-28 sm:w-44 h-[2px] bg-white/10 rounded-full overflow-hidden relative">
-              <div
-                className="absolute top-0 bottom-0 left-0 bg-accent shadow-[0_0_8px_#FBFF8D] transition-[width] duration-75"
-                style={{ width: `${Math.round(scrollProgress * 100)}%` }}
-              />
-            </div>
-            <span className={`text-[10px] font-mono uppercase tracking-widest transition-colors ${scrollProgress > 0.72 ? 'text-accent font-semibold' : 'text-white/40'}`}>
-              02 Atelier 4K Master
-            </span>
-          </div>
-
-        </div>
-
-        {/* ============================================================== */}
-        {/* CENTER STAGE: CINEMATIC WIDESCREEN COMPARISON VITRINE          */}
-        {/* ============================================================== */}
-        <div className="max-w-5xl mx-auto w-full my-auto py-2 relative z-20">
+          {/* Subtle Ambient Atmosphere Glow */}
+          <div className="absolute inset-0 bg-radial-gradient from-accent/[0.035] via-transparent to-transparent pointer-events-none" />
           <div
-            ref={canvasRef}
-            className="relative aspect-[4/3] sm:aspect-[16/9] w-full rounded-sm overflow-hidden select-none border border-white/15 shadow-2xl cursor-ew-resize bg-black touch-none group"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerDrag}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-          >
-            {/* Layer 1: 4K Atelier Master (Full background) */}
-            <div
-              className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out"
-              style={{ transform: `scale(${macroZoom})` }}
-            >
-              <img
-                src="/assets/after-silk.jpg"
-                alt="After: Atelier AI Studio Campaign Still"
-                className="w-full h-full object-cover pointer-events-none select-none filter brightness-105"
-                draggable={false}
-              />
+            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-accent/[0.03] blur-[120px] rounded-full pointer-events-none transition-opacity duration-700"
+            style={{ opacity: 0.3 + scrollProgress * 0.7 }}
+          />
+
+          {/* Top Bar: Minimal Header & Progress Scrubber */}
+          <div className="max-w-6xl mx-auto w-full pt-2 sm:pt-4 text-center relative z-20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-2">
+              <Sparkles className="w-3 h-3 text-accent" />
+              <span>SCROLL-DRIVEN METAMORPHOSIS</span>
             </div>
 
-            {/* Corner Badge: After */}
-            <div className="absolute top-4 right-4 z-10 pointer-events-none">
-              <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-accent px-3 py-1 rounded-sm bg-black/80 backdrop-blur-md border border-accent/30 shadow-lg flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                <span>02 / 4K ATELIER MASTER STILL</span>
+            <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-tight">
+              From raw phone snap to <span className="italic font-light text-accent">campaign master.</span>
+            </h2>
+
+            {/* Luxury Scroll Track Indicator */}
+            <div className="flex items-center justify-center gap-3 mt-3">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">
+                01 Raw Sensor
+              </span>
+              <div className="w-28 sm:w-44 h-[2px] bg-white/10 rounded-full overflow-hidden relative">
+                <div
+                  className="absolute top-0 bottom-0 left-0 bg-accent shadow-[0_0_8px_#FBFF8D] transition-[width] duration-75"
+                  style={{ width: `${Math.round(scrollProgress * 100)}%` }}
+                />
+              </div>
+              <span className={`text-[10px] font-mono uppercase tracking-widest transition-colors ${scrollProgress > 0.72 ? 'text-accent font-semibold' : 'text-white/40'}`}>
+                02 Atelier 4K Master
               </span>
             </div>
+          </div>
 
-            {/* Layer 2: Raw Phone Snap (Clipped dynamically by scroll or drag) */}
+          {/* Center Stage: Widescreen Cinematic Comparison Vitrine */}
+          <div className="max-w-5xl mx-auto w-full my-auto relative z-20">
             <div
-              className="absolute inset-0 pointer-events-none select-none"
-              style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+              ref={canvasRef}
+              className="relative aspect-[4/3] sm:aspect-[16/9] w-full rounded-sm overflow-hidden select-none border border-white/15 shadow-2xl cursor-ew-resize bg-black touch-none group"
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerDrag}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
             >
-              <img
-                src="/assets/before-phone.webp"
-                alt="Before: Raw Phone Photo"
-                className="w-full h-full object-cover pointer-events-none select-none filter contrast-95"
-                draggable={false}
-              />
-
-              {/* Corner Badge: Before */}
-              <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-white/60 px-3 py-1 rounded-sm bg-black/80 backdrop-blur-md border border-white/15 shadow-lg">
+              {/* Corner Badge: 01 Raw Sensor (Top-Left) */}
+              <div className="absolute top-4 left-4 z-20 pointer-events-none">
+                <span className={`text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase px-3 py-1 rounded-sm backdrop-blur-md shadow-lg transition-all duration-300 ${
+                  sliderPos < 50
+                    ? 'text-white bg-black/85 border border-white/20'
+                    : 'text-white/40 bg-black/60 border border-white/10'
+                }`}>
                   01 / RAW DESK SENSOR SNAP
                 </span>
               </div>
-            </div>
 
-            {/* Laser Hairline & Precision Pill Handle */}
-            <div
-              className="absolute top-0 bottom-0 w-[1.5px] bg-accent pointer-events-none z-20 shadow-[0_0_18px_rgba(251,255,141,0.85)]"
-              style={{ left: `${sliderPos}%` }}
-            >
-              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-black/90 border border-accent text-accent flex items-center justify-center shadow-2xl backdrop-blur-md group-hover:scale-105 transition-transform">
-                <ChevronsLeftRight className="w-3.5 h-3.5 text-accent" />
-              </div>
-            </div>
-
-            {/* Dynamic Telemetry Pins (Light up during the scroll sweep) */}
-            <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-white/50 bg-black/80 backdrop-blur-md px-3.5 py-1.5 rounded-sm border border-white/10">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                <span>INPUT: iPhone 15 Pro · Desk Lighting</span>
-              </span>
-              <span className="flex items-center gap-1.5 text-accent font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                <span>OUTPUT: 18K Yellow Gold · Pleated Silk · 4K CMYK</span>
-              </span>
-            </div>
-
-          </div>
-
-          <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-white/30 uppercase mt-2 px-1">
-            <span>Scroll wheel or swipe to scrub</span>
-            <span>{sliderPos}% Metamorphosis complete</span>
-          </div>
-        </div>
-
-        {/* ============================================================== */}
-        {/* BOTTOM SECTION: INDIAN MARKET ECONOMICS & CONVERSION CTA      */}
-        {/* ============================================================== */}
-        <div
-          className="max-w-5xl mx-auto w-full pb-2 sm:pb-4 transition-all duration-300 relative z-20"
-          style={{
-            opacity: metricsOpacity,
-            transform: `translateY(${metricsTranslateY}px)`,
-          }}
-        >
-          {/* 3 Architectural Metric Pillars */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-3 border-t border-white/10 text-center sm:text-left">
-            
-            {/* Metric 1 */}
-            <div>
-              <div className="flex items-baseline justify-center sm:justify-start gap-1.5">
-                <span className="font-serif text-2xl sm:text-3xl text-white font-normal">
-                  ₹19,500
+              {/* Corner Badge: 02 4K Atelier Master (Top-Right) */}
+              <div className="absolute top-4 right-4 z-20 pointer-events-none">
+                <span className={`text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase px-3 py-1 rounded-sm backdrop-blur-md shadow-lg flex items-center gap-1.5 transition-all duration-300 ${
+                  sliderPos >= 50
+                    ? 'text-accent bg-black/85 border border-accent/40 shadow-[0_0_12px_rgba(251,255,141,0.2)]'
+                    : 'text-white/40 bg-black/60 border border-white/10'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${sliderPos >= 50 ? 'bg-accent animate-pulse' : 'bg-white/30'}`} />
+                  <span>02 / 4K ATELIER MASTER STILL</span>
                 </span>
-                <span className="text-[10px] font-mono text-white/40 uppercase">/ SKU</span>
               </div>
-              <div className="text-[10px] font-mono text-accent uppercase tracking-wider font-semibold">
-                95% Capital Reduction
-              </div>
-              <p className="text-[11px] text-white/50 font-sans leading-tight mt-0.5 hidden sm:block">
-                vs. ₹3.5L – ₹5L studio rental, gaffer & model fees in Mumbai or Jaipur.
-              </p>
-            </div>
 
-            {/* Metric 2 */}
-            <div>
-              <div className="flex items-baseline justify-center sm:justify-start gap-1.5">
-                <span className="font-serif text-2xl sm:text-3xl text-white font-normal">
-                  48 Hours
+              {/* Layer 1: Raw Phone Snap (Full base background) */}
+              <div className="absolute inset-0 w-full h-full pointer-events-none select-none">
+                <img
+                  src="/assets/before-phone.webp"
+                  alt="Before: Raw Phone Photo"
+                  className="w-full h-full object-cover pointer-events-none select-none filter contrast-95"
+                  draggable={false}
+                />
+              </div>
+
+              {/* Layer 2: 4K Atelier Master (Clipped dynamically by scroll or drag from left to right) */}
+              <div
+                className="absolute inset-0 pointer-events-none select-none overflow-hidden"
+                style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+              >
+                <div
+                  className="w-full h-full transition-transform duration-300 ease-out origin-center"
+                  style={{ transform: `scale(${macroZoom})` }}
+                >
+                  <img
+                    src="/assets/after-silk.jpg"
+                    alt="After: Atelier AI Studio Campaign Still"
+                    className="w-full h-full object-cover pointer-events-none select-none filter brightness-105"
+                    draggable={false}
+                  />
+                </div>
+              </div>
+
+              {/* Laser Hairline & Precision Pill Handle */}
+              <div
+                className="absolute top-0 bottom-0 w-[1.5px] bg-accent pointer-events-none z-20 shadow-[0_0_18px_rgba(251,255,141,0.85)]"
+                style={{ left: `${sliderPos}%` }}
+              >
+                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-black/90 border border-accent text-accent flex items-center justify-center shadow-2xl backdrop-blur-md group-hover:scale-105 transition-transform">
+                  <ChevronsLeftRight className="w-3.5 h-3.5 text-accent" />
+                </div>
+              </div>
+
+              {/* Dynamic Telemetry Pins (Light up during the scroll sweep) */}
+              <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-white/50 bg-black/80 backdrop-blur-md px-3.5 py-1.5 rounded-sm border border-white/10">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                  <span>INPUT: iPhone 15 Pro · Desk Lighting</span>
                 </span>
-                <span className="text-[10px] font-mono text-white/40 uppercase">Guaranteed</span>
-              </div>
-              <div className="text-[10px] font-mono text-accent uppercase tracking-wider font-semibold">
-                14x Faster Deployment
-              </div>
-              <p className="text-[11px] text-white/50 font-sans leading-tight mt-0.5 hidden sm:block">
-                vs. 4 to 6 weeks of waiting for physical studio booking & retouching.
-              </p>
-            </div>
-
-            {/* Metric 3 */}
-            <div>
-              <div className="flex items-baseline justify-center sm:justify-start gap-1.5">
-                <span className="font-serif text-2xl sm:text-3xl text-white font-normal">
-                  Zero Transit
+                <span className="flex items-center gap-1.5 text-accent font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                  <span>OUTPUT: 18K Yellow Gold · Pleated Silk · 4K CMYK</span>
                 </span>
-                <span className="text-[10px] font-mono text-white/40 uppercase">Liability</span>
               </div>
-              <div className="text-[10px] font-mono text-accent uppercase tracking-wider font-semibold">
-                100% Risk Eliminated
-              </div>
-              <p className="text-[11px] text-white/50 font-sans leading-tight mt-0.5 hidden sm:block">
-                Zero armored courier fees. Upload unedited photos or 3DM CAD from workshop.
-              </p>
             </div>
 
-          </div>
-
-          {/* Centered Conversion Action */}
-          <div className="mt-3 sm:mt-4 text-center">
-            <a
-              href="#brief"
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold hover:bg-white transition-all shadow-lg hover:shadow-[0_0_24px_rgba(251,255,141,0.35)]"
-            >
-              <span>Commission Free Pilot SKU</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-white/30 uppercase mt-3 px-1">
+              <span>Scroll wheel or swipe to scrub</span>
+              <span>{sliderPos}% Metamorphosis complete</span>
+            </div>
           </div>
 
         </div>
-
       </div>
+
+      {/* ============================================================== */}
+      {/* 2. UNIT ECONOMICS & CTA (Separately below the scroll stage)    */}
+      {/* ============================================================== */}
+      <div className="relative z-20 max-w-5xl mx-auto px-6 md:px-12 pt-8 pb-16 sm:pt-10 sm:pb-20">
+        
+        {/* Animated Hairline Rule: draws itself across when scrolled into view */}
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          whileInView={{ scaleX: 1, opacity: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 sm:mb-10 origin-center"
+        />
+
+        {/* 3 Metric Columns with Staggered Entrance on Scroll */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.14,
+                delayChildren: 0.08,
+              },
+            },
+          }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center sm:text-left"
+        >
+          {/* Metric 1 */}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 36, filter: 'blur(8px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+              },
+            }}
+            className="group"
+          >
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 overflow-hidden">
+              <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal group-hover:text-accent transition-colors duration-300">
+                ₹19,500
+              </span>
+              <span className="text-[11px] font-mono text-white/40 uppercase">/ SKU</span>
+            </div>
+            <div className="text-[11px] font-mono text-accent uppercase tracking-wider font-semibold mt-1 flex items-center justify-center sm:justify-start gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <span>95% Capital Reduction</span>
+            </div>
+            <p className="text-xs text-white/50 font-sans leading-relaxed mt-2">
+              vs. ₹3.5L – ₹5L studio rental, gaffer & model fees in Mumbai or Jaipur.
+            </p>
+          </motion.div>
+
+          {/* Metric 2 */}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 36, filter: 'blur(8px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+              },
+            }}
+            className="group"
+          >
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 overflow-hidden">
+              <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal group-hover:text-accent transition-colors duration-300">
+                48 Hours
+              </span>
+              <span className="text-[11px] font-mono text-white/40 uppercase">Guaranteed</span>
+            </div>
+            <div className="text-[11px] font-mono text-accent uppercase tracking-wider font-semibold mt-1 flex items-center justify-center sm:justify-start gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <span>14x Faster Deployment</span>
+            </div>
+            <p className="text-xs text-white/50 font-sans leading-relaxed mt-2">
+              vs. 4 to 6 weeks of waiting for physical studio booking & retouching.
+            </p>
+          </motion.div>
+
+          {/* Metric 3 */}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 36, filter: 'blur(8px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+              },
+            }}
+            className="group"
+          >
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 overflow-hidden">
+              <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal group-hover:text-accent transition-colors duration-300">
+                Zero Transit
+              </span>
+              <span className="text-[11px] font-mono text-white/40 uppercase">Liability</span>
+            </div>
+            <div className="text-[11px] font-mono text-accent uppercase tracking-wider font-semibold mt-1 flex items-center justify-center sm:justify-start gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <span>100% Risk Eliminated</span>
+            </div>
+            <p className="text-xs text-white/50 font-sans leading-relaxed mt-2">
+              Zero armored courier fees. Upload unedited photos or 3DM CAD from workshop.
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* Centered Conversion Action with Scale & Glow Reveal on Scroll */}
+        <motion.div
+          initial={{ opacity: 0, y: 24, scale: 0.94 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-8 sm:mt-10 text-center"
+        >
+          <a
+            href="#brief"
+            className="inline-flex items-center justify-center gap-3 px-9 py-4 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-[0_0_32px_rgba(251,255,141,0.45)] hover:scale-105 active:scale-98"
+          >
+            <span>Commission Free Pilot SKU</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </motion.div>
+      </div>
+
     </section>
   );
 };
+
