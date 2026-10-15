@@ -1,289 +1,235 @@
-import React, { useState } from 'react';
-import { Terminal, Check, Layers, Sliders, RefreshCw, Sparkles, Copy, Eye } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 
-type VariantKey = 'A' | 'B' | 'C';
-type FormatKey = 'feed' | 'social' | 'banner';
-
-interface VariantInfo {
-  key: VariantKey;
+interface CampaignFormat {
+  id: string;
+  index: number;
   label: string;
-  backdrop: string;
-  lighting: string;
+  shortLabel: string;
+  ratio: string;
+  aspectClass: string;
+  channel: string;
   image: string;
-  shutter: string;
 }
 
+const CAMPAIGN_FORMATS: CampaignFormat[] = [
+  {
+    id: 'feed-square',
+    index: 0,
+    label: '01 / 1:1 Square Feed',
+    shortLabel: '1:1 Square Feed',
+    ratio: '1080 × 1080 px',
+    aspectClass: 'aspect-square',
+    channel: 'E-Commerce Feed & Google Merchant Catalog',
+    image: '/assets/ad-square.jpg',
+  },
+  {
+    id: 'social-vertical',
+    index: 1,
+    label: '02 / 4:5 Social Campaign',
+    shortLabel: '4:5 Social Drop',
+    ratio: '1080 × 1350 px',
+    aspectClass: 'aspect-[4/5]',
+    channel: 'Dark-Mode Mobile Feed & High-Conversion Stories',
+    image: '/assets/ad-social.jpg',
+  },
+  {
+    id: 'hero-billboard',
+    index: 2,
+    label: '03 / 16:9 Hero Billboard',
+    shortLabel: '16:9 Hero Billboard',
+    ratio: '1920 × 1080 px',
+    aspectClass: 'aspect-[16/9]',
+    channel: 'Web Flagship Billboard & Digital Print Display',
+    image: '/assets/ad-banner.jpg',
+  },
+];
+
 export const InteractiveAdStudioMock: React.FC = () => {
-  const [selectedVariant, setSelectedVariant] = useState<VariantKey>('A');
-  const [selectedFormat, setSelectedFormat] = useState<FormatKey>('feed');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationStep, setGenerationStep] = useState('STUDIO SYNTHESIS READY');
-  const [showPromptInspection, setShowPromptInspection] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeFormatIndex, setActiveFormatIndex] = useState(0);
 
-  const variants: Record<VariantKey, VariantInfo> = {
-    A: {
-      key: 'A',
-      label: 'Variant A: Black Silk',
-      backdrop: 'Pleated Japanese raw silk with deep shadow falloff',
-      lighting: 'Large softbox upper-left raking at 45°, black flag edge',
-      image: '/assets/after-silk.jpg',
-      shutter: '100mm Macro · f/8 · 1/160s',
-    },
-    B: {
-      key: 'B',
-      label: 'Variant B: Volcanic Slate',
-      backdrop: 'Honed volcanic slate pedestal with micro-beveled rim',
-      lighting: 'Dual directional rim key, controlled specular highlight',
-      image: '/assets/after-slate.jpg',
-      shutter: '85mm Macro · f/5.6 · 1/200s',
-    },
-    C: {
-      key: 'C',
-      label: 'Variant C: Ambient Hand',
-      backdrop: 'Contextual low-key ambient evening light with warm bokeh',
-      lighting: '3200K practical point source in out-of-focus background',
-      image: '/assets/after-hand.jpg',
-      shutter: '85mm Prime · f/2.8 · 1/125s',
-    },
+  const targetProgressRef = useRef(0);
+  const currentProgressRef = useRef(0);
+
+  // Smooth Scroll Scrub Engine (scroll-world architecture)
+  useEffect(() => {
+    let animFrame: number;
+
+    const onScroll = () => {
+      if (!trackRef.current) return;
+      const rect = trackRef.current.getBoundingClientRect();
+      const maxScroll = rect.height - window.innerHeight;
+      if (maxScroll <= 0) return;
+
+      const raw = -rect.top / maxScroll;
+      const clamped = Math.max(0, Math.min(1, raw));
+      targetProgressRef.current = clamped;
+    };
+
+    const loop = () => {
+      const diff = targetProgressRef.current - currentProgressRef.current;
+      currentProgressRef.current += diff * 0.12;
+
+      const progress = currentProgressRef.current;
+      setScrollProgress(progress);
+
+      // Determine active format from scroll position
+      let newIndex = 0;
+      if (progress < 0.33) {
+        newIndex = 0;
+      } else if (progress < 0.66) {
+        newIndex = 1;
+      } else {
+        newIndex = 2;
+      }
+
+      setActiveFormatIndex(newIndex);
+      animFrame = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    animFrame = requestAnimationFrame(loop);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(animFrame);
+    };
+  }, []);
+
+  const handleJumpToFormat = (index: number) => {
+    if (!trackRef.current) return;
+    const rect = trackRef.current.getBoundingClientRect();
+    const scrollTop = window.scrollY + rect.top;
+    const maxScroll = rect.height - window.innerHeight;
+    const targetOffset = (index / 2) * maxScroll;
+
+    window.scrollTo({
+      top: scrollTop + targetOffset,
+      behavior: 'smooth',
+    });
   };
 
-  const formats: Record<FormatKey, { label: string; aspectClass: string; ratio: string; desc: string }> = {
-    feed: {
-      label: '1:1 Square Feed',
-      aspectClass: 'aspect-square',
-      ratio: '1080 × 1080 px',
-      desc: 'Optimized for Instagram feed carousels and Google Shopping.',
-    },
-    social: {
-      label: '4:5 Social Campaign',
-      aspectClass: 'aspect-[4/5]',
-      ratio: '1080 × 1350 px',
-      desc: 'Thumb-stopping vertical crop designed for dark-mode feeds.',
-    },
-    banner: {
-      label: '16:9 Hero Billboard',
-      aspectClass: 'aspect-[16/9]',
-      ratio: '1920 × 1080 px',
-      desc: 'Calibrated negative space for website hero banners.',
-    },
-  };
-
-  const handleSelectVariant = (key: VariantKey) => {
-    if (key === selectedVariant) return;
-    setIsGenerating(true);
-    setGenerationStep('LOCKING 18K GOLD REFRACTION...');
-
-    setTimeout(() => {
-      setSelectedVariant(key);
-    }, 250);
-
-    setTimeout(() => {
-      setIsGenerating(false);
-      setGenerationStep('STUDIO SYNTHESIS READY');
-    }, 550);
-  };
-
-  const handleSelectFormat = (f: FormatKey) => {
-    setSelectedFormat(f);
-  };
-
-  const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(
-      `commercial jewellery catalogue product render, seamless matte sweep background, single large softbox key light from upper left, black flag camera-right for edge definition, white bounce fill at 30 percent, physically accurate metal response, controlled specular highlight along the band, no coloured gels, 100mm macro lens, f/8, tack sharp, neutral colour science.`
-    );
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const current = variants[selectedVariant];
-  const activeFormat = formats[selectedFormat];
+  const current = CAMPAIGN_FORMATS[activeFormatIndex];
 
   return (
-    <section id="interactive-mock" className="py-24 md:py-32 bg-[#040404] text-white border-b border-hairline overflow-hidden">
-      <div className="max-w-8xl mx-auto px-6 md:px-12">
+    <section id="interactive-mock" className="relative bg-[#020202] text-white border-b border-hairline">
+      
+      {/* Scroll-Driven Pinned Track */}
+      <div ref={trackRef} className="relative h-[190vh]">
         
-        {/* Header */}
-        <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[11px] font-mono tracking-[0.25em] uppercase mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span>INTERACTIVE MULTI-VARIANT AD ENGINE</span>
-          </div>
-          <h2 className="font-serif text-4xl sm:text-5xl text-white font-normal mb-3">
-            Live Facsimile: Test the Ad Engine
-          </h2>
-          <p className="text-white/60 text-sm font-sans font-light">
-            Switch pedestals (Silk, Slate, Hand) and aspect ratios. The stone facets, prongs, and 18K gold alloy remain identical across every variant.
-          </p>
-        </div>
-
-        {/* Facsimile Window */}
-        <div className="rounded-sm border border-white/15 bg-[#0A0A0A] shadow-2xl overflow-hidden">
+        {/* Sticky Viewport Stage — Generous spacing and negative space */}
+        <div className="sticky top-0 h-screen w-full flex flex-col justify-start pt-20 sm:pt-24 md:pt-28 pb-10 sm:pb-14 px-4 sm:px-8 md:px-12 select-none overflow-hidden z-10">
           
-          {/* Top Control Bar */}
-          <div className="bg-[#111111] border-b border-white/10 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
-            {/* Simulated Domain */}
-            <div className="flex items-center gap-3">
-              <div className="flex gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-              </div>
-              <span className="hidden sm:inline px-3 py-1 rounded bg-black/60 border border-white/10 text-[11px] font-mono text-white/50">
-                https://studio.atelier.ai/engine/live-preview
-              </span>
+          {/* Subtle Ambient Atmosphere Glow */}
+          <div className="absolute inset-0 bg-radial-gradient from-accent/[0.04] via-transparent to-transparent pointer-events-none" />
+          <div
+            className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-accent/[0.03] blur-[150px] rounded-full pointer-events-none transition-transform duration-700"
+            style={{
+              transform: `translate(-50%, -50%) translateX(${(scrollProgress - 0.5) * 160}px)`,
+              opacity: 0.35 + scrollProgress * 0.45,
+            }}
+          />
+
+          {/* Top Bar: Minimal Header & Interactive Format Pills */}
+          <div className="max-w-4xl mx-auto w-full text-center relative z-20 shrink-0">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-3.5 sm:mb-4.5">
+              <Sparkles className="w-3 h-3 text-accent" />
+              <span>AUTONOMOUS MULTI-FORMAT CAMPAIGN MATRIX</span>
             </div>
 
-            {/* Active Status */}
-            <div className="flex items-center gap-2 text-xs font-mono text-accent">
-              <span className={`w-2 h-2 rounded-full ${isGenerating ? 'bg-accent animate-ping' : 'bg-accent'}`} />
-              <span>{isGenerating ? 'Synthesizing...' : 'Engine Active'}</span>
-            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal tracking-tight leading-tight mb-6 sm:mb-7">
+              One master CAD. <span className="italic font-light text-accent">Infinite campaign formats.</span>
+            </h2>
 
-            {/* Variant Switcher Pills */}
-            <div className="flex items-center bg-black/40 p-1 rounded-sm border border-white/10">
-              {(['A', 'B', 'C'] as VariantKey[]).map((key) => (
-                <button
-                  key={key}
-                  onClick={() => handleSelectVariant(key)}
-                  className={`px-3 py-1 rounded-sm text-xs font-mono tracking-wider uppercase transition-all ${
-                    selectedVariant === key
-                      ? 'bg-accent text-black font-semibold shadow-sm'
-                      : 'text-white/70 hover:text-white'
-                  }`}
-                >
-                  {variants[key].label.split(':')[1]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Facsimile Body */}
-          <div className="p-6 sm:p-10 bg-[#FAF9F5] text-[#121212]">
-            
-            {/* Format Bar */}
-            <div className="flex flex-wrap items-center justify-between pb-4 mb-6 border-b border-[#E5DED5] gap-4">
-              <div>
-                <span className="font-serif text-xl tracking-wider uppercase text-[#121212] block">
-                  ATELIER VENDÔME · AD MATRIX
-                </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#888888]">
-                  Automated Multi-Format Rendering
-                </span>
-              </div>
-
-              {/* Format Switcher */}
-              <div className="flex items-center gap-1.5 bg-[#EFEAE4] p-1 rounded-full border border-[#E5DED5]">
-                {(['feed', 'social', 'banner'] as FormatKey[]).map((f) => (
+            {/* Unified Interactive Format Dock with Spring Gliding Indicator */}
+            <div className="inline-flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-2xl">
+              {CAMPAIGN_FORMATS.map((fmt, idx) => {
+                const isActive = activeFormatIndex === idx;
+                return (
                   <button
-                    key={f}
-                    onClick={() => handleSelectFormat(f)}
-                    className={`px-3.5 py-1 rounded-full text-xs font-mono uppercase transition-all ${
-                      selectedFormat === f
-                        ? 'bg-[#121212] text-white font-medium shadow-sm'
-                        : 'text-[#666666] hover:text-[#121212]'
+                    key={fmt.id}
+                    onClick={() => handleJumpToFormat(idx)}
+                    className={`relative px-4 sm:px-5 py-2 rounded-full text-[10px] sm:text-[11px] font-mono uppercase tracking-wider transition-colors duration-200 flex items-center gap-2 cursor-pointer ${
+                      isActive
+                        ? 'text-black font-semibold'
+                        : 'text-white/50 hover:text-white/80'
                     }`}
                   >
-                    {formats[f].label.split(' ')[0]} ({formats[f].ratio.split(' ')[0]})
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeFormatPill"
+                        className="absolute inset-0 bg-accent rounded-full shadow-[0_0_20px_rgba(251,255,141,0.35)]"
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <span className={`relative z-10 w-1.5 h-1.5 rounded-full transition-colors ${isActive ? 'bg-black' : 'bg-white/30'}`} />
+                    <span className="relative z-10">{fmt.shortLabel}</span>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
+          </div>
 
-            {/* Split Render View */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Central Hero Stage: The Image is the Sole Centerpiece */}
+          <div className="max-w-5xl mx-auto w-full my-auto relative z-20 flex flex-col items-center justify-center px-2">
+            
+            {/* Morphic Aspect Vitrine Container */}
+            <div className="relative h-[46vh] sm:h-[50vh] md:h-[54vh] max-h-[540px] w-full flex items-center justify-center">
               
-              {/* Main Render Display */}
-              <div className="lg:col-span-7 bg-white p-6 rounded-sm border border-[#E5DED5] shadow-md flex flex-col justify-between">
-                <div className={`relative ${activeFormat.aspectClass} w-full rounded-sm overflow-hidden bg-[#EFEAE4] border border-[#E5DED5] mb-4 flex items-center justify-center transition-all duration-300`}>
-                  <img
+              <motion.div
+                layout
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className={`relative ${current.aspectClass} h-full max-w-full rounded-sm overflow-hidden bg-black border border-white/20 shadow-2xl group flex items-center justify-center`}
+              >
+                {/* Active Campaign Image with Crossfade */}
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={current.id}
                     src={current.image}
                     alt={current.label}
-                    className={`w-full h-full object-cover transition-opacity duration-300 ${
-                      isGenerating ? 'opacity-30 filter blur-sm' : 'opacity-100 filter blur-0'
-                    }`}
+                    initial={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, scale: 1.02, filter: 'blur(4px)' }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-full h-full object-contain pointer-events-none select-none"
+                    draggable={false}
                   />
-                  <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-sm text-[10px] font-mono uppercase">
-                    {activeFormat.ratio}
-                  </div>
-                  <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm text-[#121212] px-2.5 py-0.5 rounded-sm text-[10px] font-mono border border-[#E5DED5]">
-                    {current.shutter}
-                  </div>
+                </AnimatePresence>
+
+                {/* Subtle Architectural Corner Brackets */}
+                <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l border-white/40 pointer-events-none" />
+                <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t border-r border-white/40 pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l border-white/40 pointer-events-none" />
+                <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r border-white/40 pointer-events-none" />
+
+                {/* The Single Overlay Element: Exact Format Dimension Badge */}
+                <div className="absolute top-3.5 left-3.5 pointer-events-none">
+                  <span className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-white/90 px-3 py-1 rounded-sm bg-black/80 backdrop-blur-md border border-white/15 shadow-lg flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    <span>{current.ratio}</span>
+                  </span>
                 </div>
+              </motion.div>
 
-                <div className="flex justify-between items-baseline">
-                  <div>
-                    <h3 className="font-serif text-2xl text-[#121212] font-normal">
-                      Coco Ribbon Wave Suite · {current.label.split(':')[1]}
-                    </h3>
-                    <p className="text-xs text-[#666666] font-sans mt-0.5 font-light">
-                      {activeFormat.desc}
-                    </p>
-                  </div>
-                  <span className="font-serif text-2xl text-[#121212] font-normal">$2,550</span>
-                </div>
-              </div>
+            </div>
 
-              {/* Right Column: Prompt Block */}
-              <div className="lg:col-span-5 space-y-4">
-                
-                {/* 3 Thumbnails */}
-                <div className="space-y-2">
-                  {(['A', 'B', 'C'] as VariantKey[]).map((k) => {
-                    const v = variants[k];
-                    const isSelected = selectedVariant === k;
-                    return (
-                      <div
-                        key={k}
-                        onClick={() => handleSelectVariant(k)}
-                        className={`p-3 rounded-sm border cursor-pointer transition-all flex items-center gap-3 ${
-                          isSelected
-                            ? 'bg-white border-[#121212] shadow-sm ring-1 ring-[#121212]'
-                            : 'bg-white/60 border-[#E5DED5] hover:bg-white'
-                        }`}
-                      >
-                        <div className="w-14 h-14 bg-[#EFEAE4] rounded-sm overflow-hidden shrink-0 border border-[#E5DED5]">
-                          <img src={v.image} alt={v.label} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-[#121212] font-sans">{v.label}</span>
-                            {isSelected && <span className="text-[10px] font-mono text-[#121212] font-bold">✓ ACTIVE</span>}
-                          </div>
-                          <p className="text-[11px] text-[#777777] font-sans truncate">{v.backdrop}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Prompt Card */}
-                <div className="p-4 bg-white border border-[#E5DED5] rounded-sm">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs font-mono uppercase tracking-wider text-[#121212] font-bold flex items-center gap-1.5">
-                      <Terminal className="w-3.5 h-3.5 text-[#C8A45C]" /> Locked RIG-STUDIO-CG
-                    </span>
-                    <button
-                      onClick={handleCopyPrompt}
-                      className="text-[11px] font-mono text-[#C8A45C] hover:underline flex items-center gap-1"
-                    >
-                      {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                      <span>{copied ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-                  <p className="text-[11px] text-[#666666] font-mono leading-relaxed">
-                    commercial jewellery catalogue render, matte sweep, softbox key upper-left, black flag edge, 30% white bounce, 100mm macro f/8, neutral warm balance +150K.
-                  </p>
-                </div>
-
-              </div>
-
+            {/* Clean Under-Vitrine Descriptor */}
+            <div className="text-center mt-3.5">
+              <p className="text-xs text-white/50 font-sans font-light tracking-wide">
+                <span className="text-white font-medium">{current.shortLabel}</span> · {current.channel}
+              </p>
             </div>
 
           </div>
+
         </div>
 
       </div>
+
     </section>
   );
 };
