@@ -62,12 +62,12 @@ export const PerformanceMetrics: React.FC = () => {
               <div className="w-16 h-px bg-white/20 mb-6 group-hover:w-24 group-hover:bg-accent transition-all duration-500 origin-left" />
 
               {/* Instrument Serif italic numeral */}
-              <div className="font-serif italic text-6xl sm:text-7xl lg:text-8xl text-accent font-normal mb-3 tracking-tight group-hover:translate-x-1 transition-transform duration-300">
+              <div className="font-serif italic text-6xl sm:text-7xl lg:text-8xl text-accent font-normal mb-3 tracking-tight group-hover:translate-x-1 group-hover:drop-shadow-[0_0_28px_rgba(251,255,141,0.35)] transition-all duration-300">
                 {stat.value}
               </div>
 
               {/* Label */}
-              <h3 className="font-serif text-xl sm:text-2xl text-white font-normal mb-2 leading-tight">
+              <h3 className="font-serif text-xl sm:text-2xl text-white font-normal mb-2 leading-tight group-hover:text-white transition-colors">
                 {stat.label}
               </h3>
 

@@ -71,10 +71,16 @@ export const PricingTiers: React.FC = () => {
     <section id="pricing" className="py-24 sm:py-32 md:py-36 bg-[#020202] text-white border-b border-hairline">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         
-        {/* Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-4">
-            <Sparkles className="w-3 h-3 text-accent" />
+        {/* Header with WhileInView Entrance */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-3xl mx-auto text-center mb-16 sm:mb-20"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-4 shadow-sm">
+            <Sparkles className="w-3 h-3 text-accent animate-pulse" />
             <span>TRANSPARENT COMMERCIAL LICENSING</span>
           </div>
 
@@ -85,7 +91,7 @@ export const PricingTiers: React.FC = () => {
           <p className="text-white/50 text-xs sm:text-sm font-sans max-w-xl mx-auto font-light leading-relaxed">
             Every tier includes 100% irrevocable commercial copyright buyout, 8K WebP master assets, and zero recurring royalties on global ad spend.
           </p>
-        </div>
+        </motion.div>
 
         {/* 3 Tiers Grid */}
         <motion.div
@@ -118,10 +124,10 @@ export const PricingTiers: React.FC = () => {
                     transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
                   },
                 }}
-                className={`relative rounded-sm p-8 sm:p-9 flex flex-col justify-between transition-all duration-300 ${
+                className={`relative rounded-sm p-8 sm:p-9 flex flex-col justify-between transition-all duration-500 group ${
                   isFeatured
-                    ? 'bg-[#0B0B0B] text-white border border-accent shadow-[0_0_40px_rgba(251,255,141,0.12)] lg:-translate-y-2 z-10'
-                    : 'bg-[#060606] text-white border border-white/10 hover:border-white/30'
+                    ? 'bg-[#0B0B0B] text-white border border-accent shadow-[0_0_40px_rgba(251,255,141,0.12)] hover:shadow-[0_0_55px_rgba(251,255,141,0.22)] lg:-translate-y-2 z-10'
+                    : 'bg-[#060606] text-white border border-white/10 hover:border-white/30 hover:shadow-[0_12px_36px_rgba(0,0,0,0.8)]'
                 }`}
               >
                 {/* Featured Badge */}
@@ -168,14 +174,14 @@ export const PricingTiers: React.FC = () => {
                 {/* Call to Action Button */}
                 <a
                   href="#brief"
-                  className={`w-full py-4 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all duration-300 text-center flex items-center justify-center gap-2 group ${
+                  className={`w-full py-4 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all duration-300 text-center flex items-center justify-center gap-2 group active:scale-95 cursor-pointer ${
                     isFeatured
-                      ? 'bg-accent text-black hover:bg-white shadow-lg hover:shadow-[0_0_24px_rgba(251,255,141,0.35)]'
-                      : 'border border-white/20 text-white hover:border-accent hover:text-accent hover:bg-white/5'
+                      ? 'bg-accent text-black hover:bg-white shadow-lg hover:shadow-[0_0_28px_rgba(251,255,141,0.4)]'
+                      : 'border border-white/20 text-white hover:border-accent hover:text-accent hover:bg-white/5 hover:shadow-[0_0_20px_rgba(251,255,141,0.15)]'
                   }`}
                 >
                   <span>{tier.cta}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
                 </a>
               </motion.div>
             );
@@ -190,18 +196,18 @@ export const PricingTiers: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="mt-14 sm:mt-18 p-6 rounded-sm bg-white/[0.02] border border-white/10 flex flex-wrap items-center justify-between gap-6 text-xs font-mono text-white/50"
         >
-          <div className="flex items-center gap-2.5">
-            <ShieldCheck className="w-4 h-4 text-accent shrink-0" />
+          <div className="flex items-center gap-2.5 hover:text-white/80 transition-colors cursor-default group">
+            <ShieldCheck className="w-4 h-4 text-accent shrink-0 group-hover:scale-110 transition-transform" />
             <span>100% Irrevocable Commercial Copyright Buyout Included</span>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <FileCheck className="w-4 h-4 text-accent shrink-0" />
+          <div className="flex items-center gap-2.5 hover:text-white/80 transition-colors cursor-default group">
+            <FileCheck className="w-4 h-4 text-accent shrink-0 group-hover:scale-110 transition-transform" />
             <span>Zero Recurring Royalties on Meta & Google Ad Spend</span>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <Receipt className="w-4 h-4 text-accent shrink-0" />
+          <div className="flex items-center gap-2.5 hover:text-white/80 transition-colors cursor-default group">
+            <Receipt className="w-4 h-4 text-accent shrink-0 group-hover:scale-110 transition-transform" />
             <span>GST-Compliant B2B Invoicing · Surat & Mumbai SLA</span>
           </div>
         </motion.div>

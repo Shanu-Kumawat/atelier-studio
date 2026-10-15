@@ -135,9 +135,15 @@ export const InteractiveAdStudioMock: React.FC = () => {
           />
 
           {/* Top Bar: Minimal Header & Interactive Format Pills */}
-          <div className="max-w-4xl mx-auto w-full text-center relative z-20 shrink-0">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-3.5 sm:mb-4.5">
-              <Sparkles className="w-3 h-3 text-accent" />
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-4xl mx-auto w-full text-center relative z-20 shrink-0"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-3.5 sm:mb-4.5 shadow-sm">
+              <Sparkles className="w-3 h-3 text-accent animate-pulse" />
               <span>AUTONOMOUS MULTI-FORMAT CAMPAIGN MATRIX</span>
             </div>
 
@@ -153,10 +159,10 @@ export const InteractiveAdStudioMock: React.FC = () => {
                   <button
                     key={fmt.id}
                     onClick={() => handleJumpToFormat(idx)}
-                    className={`relative px-4 sm:px-5 py-2 rounded-full text-[10px] sm:text-[11px] font-mono uppercase tracking-wider transition-colors duration-200 flex items-center gap-2 cursor-pointer ${
+                    className={`relative px-4 sm:px-5 py-2 rounded-full text-[10px] sm:text-[11px] font-mono uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer active:scale-95 ${
                       isActive
                         ? 'text-black font-semibold'
-                        : 'text-white/50 hover:text-white/80'
+                        : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'
                     }`}
                   >
                     {isActive && (
@@ -172,7 +178,7 @@ export const InteractiveAdStudioMock: React.FC = () => {
                 );
               })}
             </div>
-          </div>
+          </motion.div>
 
           {/* Central Hero Stage: The Image is the Sole Centerpiece */}
           <div className="max-w-5xl mx-auto w-full my-auto relative z-20 flex flex-col items-center justify-center px-2">

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ANGLE_SERIES, AngleSpec } from '../../data/angles';
 import { Maximize2 } from 'lucide-react';
 
@@ -77,10 +78,16 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
 
       <div className="max-w-8xl mx-auto px-6 md:px-12 relative z-10">
         
-        {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-20 md:mb-24">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[11px] font-mono tracking-[0.25em] uppercase mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+        {/* Section Header with Staggered WhileInView Entrance */}
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-3xl mx-auto text-center mb-20 md:mb-24"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[11px] font-mono tracking-[0.25em] uppercase mb-4 shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
             <span>THE 12-ANGLE CONSISTENCY MATRIX</span>
           </div>
 
@@ -92,7 +99,7 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
           <p className="text-white/60 text-sm sm:text-base font-sans max-w-lg mx-auto leading-relaxed font-light">
             Twelve optical perspectives of the 18K Yellow Gold Ribbon Ring. Proving mathematically locked geometry across elevation, azimuth, and macro focus.
           </p>
-        </div>
+        </motion.div>
 
         {/* Scattered Runway Grid (Large, Minimal, Image-First, Bottom-Anchored with Increased Vertical Spacing) */}
         <div className="w-full relative">
@@ -125,7 +132,7 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
                       src={angle.image}
                       alt={angle.title}
                       loading="lazy"
-                      className="w-full h-full object-cover filter brightness-105 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-106 pointer-events-none"
+                      className="w-full h-full object-cover filter brightness-105 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 pointer-events-none"
                     />
 
                     {/* Subtle Vignette Gradient */}
@@ -152,8 +159,8 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
                         </span>
                       </div>
 
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 shrink-0 ml-3">
-                        <span className="px-3 py-1 rounded-full bg-accent text-black font-sans text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1 shadow-lg">
+                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0 ml-3 group-hover:translate-x-0 translate-x-2">
+                        <span className="px-3.5 py-1.5 rounded-full bg-accent text-black font-sans text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 shadow-[0_0_16px_rgba(251,255,141,0.35)] active:scale-95 transition-all">
                           <Maximize2 className="w-3 h-3" /> Inspect
                         </span>
                       </div>

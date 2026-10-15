@@ -76,10 +76,16 @@ export const BriefIntakePortal: React.FC = () => {
     <section id="brief" className="py-24 sm:py-32 md:py-36 bg-[#020202] text-white border-b border-hairline overflow-hidden">
       <div className="max-w-4xl mx-auto px-6 md:px-12">
         
-        {/* Header */}
-        <div className="text-center mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-4">
-            <Sparkles className="w-3 h-3 text-accent" />
+        {/* Header with WhileInView Entrance */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-16 sm:mb-20"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-4 shadow-sm">
+            <Sparkles className="w-3 h-3 text-accent animate-pulse" />
             <span>CONFIDENTIAL COMMISSION BRIEF</span>
           </div>
 
@@ -90,7 +96,7 @@ export const BriefIntakePortal: React.FC = () => {
           <p className="text-white/50 text-xs sm:text-sm font-sans max-w-lg mx-auto font-light leading-relaxed">
             Upload workshop photos, 3DM CAD files, or gemstone specifications. Our raytracing supervisors deliver an initial calibrated test render in 24 hours.
           </p>
-        </div>
+        </motion.div>
 
         {/* Portal Body */}
         {submitted ? (
@@ -130,7 +136,14 @@ export const BriefIntakePortal: React.FC = () => {
             </div>
           </motion.div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-8 sm:p-12 rounded-sm bg-[#060606] border border-white/10 shadow-2xl space-y-8">
+          <motion.form
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            onSubmit={handleSubmit}
+            className="p-8 sm:p-12 rounded-sm bg-[#060606] border border-white/10 shadow-2xl space-y-8"
+          >
             
             {/* Row 1: Name & Confidential Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -333,10 +346,10 @@ export const BriefIntakePortal: React.FC = () => {
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-white/10">
               <button
                 type="submit"
-                className="w-full sm:w-auto px-9 py-4 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold hover:bg-white transition-all shadow-lg hover:shadow-[0_0_24px_rgba(251,255,141,0.35)] flex items-center justify-center gap-2.5 group cursor-pointer"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold hover:bg-white active:scale-95 transition-all shadow-lg hover:shadow-[0_0_28px_rgba(251,255,141,0.4)] flex items-center justify-center gap-2.5 group cursor-pointer"
               >
                 <span>Transmit Commission Brief</span>
-                <Send className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                <Send className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1.5" />
               </button>
 
               <div className="flex items-center gap-2 text-[11px] font-mono text-white/40">
@@ -345,7 +358,7 @@ export const BriefIntakePortal: React.FC = () => {
               </div>
             </div>
 
-          </form>
+          </motion.form>
         )}
 
       </div>
