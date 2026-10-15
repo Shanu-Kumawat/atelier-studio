@@ -17,8 +17,7 @@ export const StudioNavbar: React.FC = () => {
     { label: '12-Angle Runway', href: '#ten-angle-runway' },
     { label: 'Before / After', href: '#before-after' },
     { label: 'Live Engine', href: '#interactive-mock' },
-    { label: 'Capabilities', href: '#capabilities' },
-    { label: 'Pipeline', href: '#pipeline' },
+    { label: 'Metrics', href: '#metrics' },
     { label: 'Pricing', href: '#pricing' },
   ];
 

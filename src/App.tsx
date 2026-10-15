@@ -5,8 +5,6 @@ import { CinematicHero } from './components/studio/CinematicHero';
 import { TenAngleScrollRunway } from './components/studio/TenAngleScrollRunway';
 import { BeforeAfterComparison } from './components/studio/BeforeAfterComparison';
 import { InteractiveAdStudioMock } from './components/studio/InteractiveAdStudioMock';
-import { StudioCapabilities } from './components/studio/StudioCapabilities';
-import { AutonomousPipeline } from './components/studio/AutonomousPipeline';
 import { PerformanceMetrics } from './components/studio/PerformanceMetrics';
 import { PricingTiers } from './components/studio/PricingTiers';
 import { BriefIntakePortal } from './components/studio/BriefIntakePortal';
@@ -37,12 +35,6 @@ export const App: React.FC = () => {
 
         {/* 6. Live Facsimile: Multi-Variant Ad Engine & Prompt Matrix */}
         <InteractiveAdStudioMock />
-
-        {/* 6. Studio Capabilities & Optical Rig Architecture */}
-        <StudioCapabilities />
-
-        {/* 7. 6-Stage Autonomous Synthesis Pipeline */}
-        <AutonomousPipeline />
 
         {/* 8. Performance Impact & Turnaround Metrics */}
         <PerformanceMetrics />

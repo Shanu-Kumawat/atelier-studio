@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 export const PerformanceMetrics: React.FC = () => {
   const stats = [
@@ -25,16 +26,43 @@ export const PerformanceMetrics: React.FC = () => {
   ];
 
   return (
-    <section className="py-24 md:py-32 bg-black text-white border-b border-hairline">
-      <div className="max-w-8xl mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+    <section id="metrics" className="py-24 sm:py-32 md:py-36 bg-[#020202] text-white border-b border-hairline">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.1,
+              },
+            },
+          }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-14"
+        >
           {stats.map((stat, idx) => (
-            <div key={idx} className="flex flex-col">
-              {/* Hairline w-24 rule above each */}
-              <div className="w-24 h-px bg-white/20 mb-6" />
+            <motion.div
+              key={idx}
+              variants={{
+                hidden: { opacity: 0, y: 36, filter: 'blur(6px)' },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  filter: 'blur(0px)',
+                  transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              className="flex flex-col group"
+            >
+              {/* Animated hairline rule */}
+              <div className="w-16 h-px bg-white/20 mb-6 group-hover:w-24 group-hover:bg-accent transition-all duration-500 origin-left" />
 
-              {/* Instrument Serif italic numerals */}
-              <div className="font-serif italic text-6xl sm:text-7xl lg:text-8xl text-accent font-normal mb-3 tracking-tight">
+              {/* Instrument Serif italic numeral */}
+              <div className="font-serif italic text-6xl sm:text-7xl lg:text-8xl text-accent font-normal mb-3 tracking-tight group-hover:translate-x-1 transition-transform duration-300">
                 {stat.value}
               </div>
 
@@ -44,12 +72,12 @@ export const PerformanceMetrics: React.FC = () => {
               </h3>
 
               {/* Detail */}
-              <p className="text-xs text-white/50 font-sans leading-relaxed">
+              <p className="text-xs text-white/50 font-sans leading-relaxed font-light">
                 {stat.detail}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
