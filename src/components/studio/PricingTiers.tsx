@@ -1,145 +1,210 @@
 import React from 'react';
-import { Check, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Check, Sparkles, ArrowRight, ShieldCheck, FileCheck, Receipt } from 'lucide-react';
+
+interface PricingTier {
+  id: string;
+  name: string;
+  subtitle: string;
+  price: string;
+  period: string;
+  featured?: boolean;
+  badge?: string;
+  features: string[];
+  cta: string;
+}
 
 export const PricingTiers: React.FC = () => {
-  const tiers = [
+  const tiers: PricingTier[] = [
     {
       id: 'pilot',
       name: 'Flagship Pilot',
-      subtitle: 'Calibrate the AI studio on your hero piece',
-      price: '$2,400',
+      subtitle: 'Calibrate the AI studio on your hero pieces',
+      price: '₹1,25,000',
       period: 'per collection drop',
       features: [
         '5 Master SKUs rendered under RIG-STUDIO-CG',
-        'Complete 10-Angle Consistency Matrix for hero SKU',
-        '15 Editorial ad stills (16:9, 4:5, 1:1)',
-        '1:1 Transparent PNG cutouts (zero fringe)',
-        '48-hour delivery & full commercial buyout',
+        'Complete 12-Angle Consistency Runway for hero SKU',
+        '15 Omnichannel ad variants (1:1, 4:5, 16:9)',
+        '1:1 Transparent PNG-32 cutouts (zero fringe)',
+        '48-Hour delivery & 100% commercial buyout',
       ],
-      cta: 'Commission Pilot',
+      cta: 'Commission Pilot SKU',
     },
     {
       id: 'seasonal',
       name: 'Atelier Seasonal',
-      subtitle: 'Complete seasonal collection launch',
-      price: '$6,800',
+      subtitle: 'Complete seasonal catalog & digital campaign drop',
+      price: '₹3,85,000',
       period: 'per seasonal drop',
       featured: true,
+      badge: 'MOST COMMISSIONED',
       features: [
         '20 Master SKUs with complete multi-angle consistency',
-        '60 Omnichannel ad variants with copy testing',
-        'Interactive digital lookbook & line-sheet',
-        'Custom gold alloy lock (Yellow, Rose, Champagne)',
-        'Dedicated art director & 2 revision cycles',
-        'Priority 48-hour delivery timeline',
+        '60 Omnichannel ad variants across silk & slate',
+        '3DM CAD & unedited phone photo ingestion',
+        'Custom alloy lock (Yellow, Rose, Polki Champagne)',
+        'Raw layered PSDs + 300 DPI CMYK print TIFFs',
+        'Dedicated Art Director & 48-hour priority SLA',
       ],
       cta: 'Initiate Seasonal Drop',
     },
     {
       id: 'enterprise',
       name: 'Maison Enterprise',
-      subtitle: 'Continuous luxury drops and omnichannel ad pipelines',
-      price: '$14,500',
+      subtitle: 'Continuous volume throughput for luxury export houses',
+      price: '₹8,50,000',
       period: 'monthly retainer',
       features: [
-        'Unlimited SKU throughput across drops',
-        'Instant vertical swap (Jewelry to Couture)',
-        'Custom lighting presets matching brand heritage',
-        'Private Slack pipeline with direct prompt engineer access',
-        'Raw layered PSDs + 300 DPI CMYK print certification',
+        'Continuous SKU throughput across brand collections',
+        'Multi-category support (High Jewelry, Polki, Watches)',
+        'Private dedicated pipeline with Lead Prompt Engineer',
+        'Custom lighting & heritage showroom replica presets',
+        'Dedicated secure encrypted cloud asset vault',
+        'Direct GST invoicing & Surat/Mumbai bourse workflow',
       ],
-      cta: 'Engage Enterprise',
+      cta: 'Engage Enterprise Pipeline',
     },
   ];
 
   return (
-    <section id="pricing" className="py-24 md:py-32 bg-[#040404] text-white border-b border-hairline">
-      <div className="max-w-8xl mx-auto px-6 md:px-12">
+    <section id="pricing" className="py-24 sm:py-32 md:py-36 bg-[#020202] text-white border-b border-hairline">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
         
         {/* Header */}
-        <div className="max-w-3xl mx-auto text-center mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[11px] font-mono tracking-[0.25em] uppercase mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span>TRANSPARENT LICENSING</span>
+        <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-4">
+            <Sparkles className="w-3 h-3 text-accent" />
+            <span>TRANSPARENT COMMERCIAL LICENSING</span>
           </div>
-          <h2 className="font-serif text-4xl sm:text-5xl text-white font-normal mb-3">
-            Commercial Studio Tiers
+
+          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-tight mb-4">
+            Predictable unit economics. <span className="italic font-light text-accent">Zero studio overhead.</span>
           </h2>
-          <p className="text-white/60 text-sm font-sans max-w-lg mx-auto font-light">
-            Every commission includes 100% irrevocable commercial copyright transfer, 8K WebP files, and zero recurring royalties.
+
+          <p className="text-white/50 text-xs sm:text-sm font-sans max-w-xl mx-auto font-light leading-relaxed">
+            Every tier includes 100% irrevocable commercial copyright buyout, 8K WebP master assets, and zero recurring royalties on global ad spend.
           </p>
         </div>
 
         {/* 3 Tiers Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-7xl mx-auto">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.1,
+              },
+            },
+          }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch"
+        >
           {tiers.map((tier) => {
             const isFeatured = !!tier.featured;
             return (
-              <div
+              <motion.div
                 key={tier.id}
-                
-                className={`relative rounded-sm border p-8 flex flex-col justify-between transition-all duration-300 ${
+                variants={{
+                  hidden: { opacity: 0, y: 36, filter: 'blur(6px)' },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    filter: 'blur(0px)',
+                    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+                  },
+                }}
+                className={`relative rounded-sm p-8 sm:p-9 flex flex-col justify-between transition-all duration-300 ${
                   isFeatured
-                    ? 'bg-[#0D0D0D] text-white border-accent shadow-2xl lg:scale-105 z-10 ring-1 ring-accent/30'
-                    : 'bg-black text-white border-white/10 hover:border-white/30'
+                    ? 'bg-[#0B0B0B] text-white border border-accent shadow-[0_0_40px_rgba(251,255,141,0.12)] lg:-translate-y-2 z-10'
+                    : 'bg-[#060606] text-white border border-white/10 hover:border-white/30'
                 }`}
               >
                 {/* Featured Badge */}
                 {isFeatured && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent text-black px-3.5 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase font-bold flex items-center gap-1 shadow-md">
-                    <Sparkles className="w-3 h-3" /> MOST POPULAR
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent text-black px-4 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase font-semibold flex items-center gap-1.5 shadow-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+                    <span>{tier.badge}</span>
                   </div>
                 )}
 
                 <div>
                   <div className="mb-6">
-                    <h3 className="font-serif text-3xl text-white mb-1.5 font-normal">
+                    <h3 className="font-serif text-2xl sm:text-3xl text-white mb-2 font-normal">
                       {tier.name}
                     </h3>
-                    <p className="text-xs text-white/50 font-sans font-light">
+                    <p className="text-xs text-white/50 font-sans font-light leading-relaxed">
                       {tier.subtitle}
                     </p>
                   </div>
 
-                  {/* Price */}
-                  <div className="mb-6 pb-6 border-b border-white/10">
+                  {/* Price in INR */}
+                  <div className="mb-8 pb-6 border-b border-white/10">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-serif text-5xl text-accent font-normal">
+                      <span className="font-serif text-4xl sm:text-5xl text-accent font-normal tracking-tight">
                         {tier.price}
                       </span>
-                      <span className="text-xs font-mono uppercase text-white/40">
-                        / {tier.period.split(' ')[0]}
+                      <span className="text-[11px] font-mono uppercase text-white/40 tracking-wider">
+                        / {tier.period}
                       </span>
                     </div>
                   </div>
 
-                  {/* Features */}
-                  <ul className="space-y-3 mb-8 text-xs font-sans">
+                  {/* Features List */}
+                  <ul className="space-y-3.5 mb-10 text-xs font-sans">
                     {tier.features.map((feature, fIdx) => (
-                      <li key={fIdx} className="flex items-start gap-2.5">
+                      <li key={fIdx} className="flex items-start gap-3">
                         <Check className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
-                        <span className="text-white/80 font-light">{feature}</span>
+                        <span className="text-white/80 font-light leading-relaxed">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* CTA */}
+                {/* Call to Action Button */}
                 <a
                   href="#brief"
-                  
-                  className={`w-full py-3.5 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all duration-300 text-center block ${
+                  className={`w-full py-4 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all duration-300 text-center flex items-center justify-center gap-2 group ${
                     isFeatured
-                      ? 'bg-accent text-black hover:bg-white shadow-lg'
-                      : 'border border-white/20 text-white hover:border-accent hover:text-accent'
+                      ? 'bg-accent text-black hover:bg-white shadow-lg hover:shadow-[0_0_24px_rgba(251,255,141,0.35)]'
+                      : 'border border-white/20 text-white hover:border-accent hover:text-accent hover:bg-white/5'
                   }`}
                 >
-                  {tier.cta}
+                  <span>{tier.cta}</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </a>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
+
+        {/* Commercial Trust & Procurement Strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-14 sm:mt-18 p-6 rounded-sm bg-white/[0.02] border border-white/10 flex flex-wrap items-center justify-between gap-6 text-xs font-mono text-white/50"
+        >
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="w-4 h-4 text-accent shrink-0" />
+            <span>100% Irrevocable Commercial Copyright Buyout Included</span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <FileCheck className="w-4 h-4 text-accent shrink-0" />
+            <span>Zero Recurring Royalties on Meta & Google Ad Spend</span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <Receipt className="w-4 h-4 text-accent shrink-0" />
+            <span>GST-Compliant B2B Invoicing · Surat & Mumbai SLA</span>
+          </div>
+        </motion.div>
 
       </div>
     </section>
