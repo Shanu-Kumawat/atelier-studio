@@ -221,7 +221,7 @@ export const BeforeAfterComparison: React.FC = () => {
                 </span>
                 <span className="flex items-center gap-1.5 text-accent font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  <span>OUTPUT: 18K Yellow Gold · Pleated Silk · 4K CMYK</span>
+                  <span>OUTPUT: 18K Gold & Emerald · Pleated Silk · 4K CMYK</span>
                 </span>
               </div>
             </div>

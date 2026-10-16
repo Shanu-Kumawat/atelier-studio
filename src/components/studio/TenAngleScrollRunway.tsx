@@ -97,7 +97,7 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
           </h2>
 
           <p className="text-white/60 text-sm sm:text-base font-sans max-w-lg mx-auto leading-relaxed font-light">
-            Twelve optical perspectives of the 18K Yellow Gold Ribbon Ring. Proving mathematically locked geometry across elevation, azimuth, and macro focus.
+            Twelve optical perspectives of the 18K Yellow Gold & Imperial Emerald Ribbon Ring. Proving mathematically locked geometry across elevation, azimuth, and macro focus.
           </p>
         </motion.div>
 
