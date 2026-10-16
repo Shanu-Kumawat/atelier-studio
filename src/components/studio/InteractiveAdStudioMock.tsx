@@ -54,6 +54,10 @@ export const InteractiveAdStudioMock: React.FC = () => {
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
 
+  const lockedUntilRef = useRef<number>(0);
+  const activeIndexRef = useRef<number>(0);
+  const snapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Preload all campaign format images for instant zero-latency switching
   useEffect(() => {
     CAMPAIGN_FORMATS.forEach((fmt) => {
@@ -62,7 +66,7 @@ export const InteractiveAdStudioMock: React.FC = () => {
     });
   }, []);
 
-  // Smooth Scroll Scrub Engine (scroll-world architecture)
+  // Smooth Sticky Scroll Engine with Magnetic Snapping & Anti-Skip Latch
   useEffect(() => {
     let animFrame: number;
 
@@ -75,6 +79,28 @@ export const InteractiveAdStudioMock: React.FC = () => {
       const raw = -rect.top / maxScroll;
       const clamped = Math.max(0, Math.min(1, raw));
       targetProgressRef.current = clamped;
+
+      // Soft Magnetic Settle when user finishes a scroll gesture inside the section
+      if (snapTimeoutRef.current) clearTimeout(snapTimeoutRef.current);
+      if (clamped > 0.08 && clamped < 0.92) {
+        snapTimeoutRef.current = setTimeout(() => {
+          if (!trackRef.current) return;
+          const currentRect = trackRef.current.getBoundingClientRect();
+          const currentMax = currentRect.height - window.innerHeight;
+          const currentProgress = -currentRect.top / currentMax;
+          const targetCenters = [0.18, 0.50, 0.82];
+          const target = targetCenters[activeIndexRef.current];
+
+          // If resting slightly off center, gently snap to the active format dwell center
+          if (Math.abs(currentProgress - target) > 0.06 && Math.abs(currentProgress - target) < 0.18) {
+            const top = window.scrollY + currentRect.top;
+            window.scrollTo({
+              top: top + target * currentMax,
+              behavior: 'smooth',
+            });
+          }
+        }, 160);
+      }
     };
 
     const loop = () => {
@@ -84,17 +110,35 @@ export const InteractiveAdStudioMock: React.FC = () => {
       const progress = currentProgressRef.current;
       setScrollProgress(progress);
 
-      // Determine active format from scroll position
-      let newIndex = 0;
-      if (progress < 0.33) {
-        newIndex = 0;
-      } else if (progress < 0.66) {
-        newIndex = 1;
+      // Determine active format with generous dwell plateaus
+      // Format 0 (1:1 Square Feed): 0.00 to 0.36
+      // Format 1 (4:5 Social Drop): 0.36 to 0.70
+      // Format 2 (16:9 Hero Billboard): 0.70 to 1.00
+      let rawIndex = 0;
+      if (progress < 0.36) {
+        rawIndex = 0;
+      } else if (progress < 0.70) {
+        rawIndex = 1;
       } else {
-        newIndex = 2;
+        rawIndex = 2;
       }
 
-      setActiveFormatIndex(newIndex);
+      const now = Date.now();
+      const currentIdx = activeIndexRef.current;
+
+      // Anti-Double-Skip Lock: Prevent skipping two formats in a single fast wheel flick
+      if (now < lockedUntilRef.current) {
+        // Enforce max single-step change during transition cooldown
+        if (Math.abs(rawIndex - currentIdx) > 1) {
+          rawIndex = currentIdx + Math.sign(rawIndex - currentIdx);
+        }
+      } else if (rawIndex !== currentIdx) {
+        // Sticky latch: give each format at least 420ms before allowing next transition
+        lockedUntilRef.current = now + 420;
+        activeIndexRef.current = rawIndex;
+        setActiveFormatIndex(rawIndex);
+      }
+
       animFrame = requestAnimationFrame(loop);
     };
 
@@ -104,6 +148,7 @@ export const InteractiveAdStudioMock: React.FC = () => {
 
     return () => {
       window.removeEventListener('scroll', onScroll);
+      if (snapTimeoutRef.current) clearTimeout(snapTimeoutRef.current);
       cancelAnimationFrame(animFrame);
     };
   }, []);
@@ -113,7 +158,13 @@ export const InteractiveAdStudioMock: React.FC = () => {
     const rect = trackRef.current.getBoundingClientRect();
     const scrollTop = window.scrollY + rect.top;
     const maxScroll = rect.height - window.innerHeight;
-    const targetOffset = (index / 2) * maxScroll;
+    const targetCenters = [0.18, 0.50, 0.82];
+    const targetOffset = targetCenters[index] * maxScroll;
+
+    // Lock index during manual jump
+    lockedUntilRef.current = Date.now() + 600;
+    activeIndexRef.current = index;
+    setActiveFormatIndex(index);
 
     window.scrollTo({
       top: scrollTop + targetOffset,
@@ -126,8 +177,8 @@ export const InteractiveAdStudioMock: React.FC = () => {
   return (
     <section id="interactive-mock" className="relative bg-[#020202] text-white border-b border-hairline">
       
-      {/* Scroll-Driven Pinned Track */}
-      <div ref={trackRef} className="relative h-[190vh]">
+      {/* Scroll-Driven Pinned Track (320vh ensures generous sticky dwell per format) */}
+      <div ref={trackRef} className="relative h-[320vh]">
         
         {/* Sticky Viewport Stage — Generous spacing and negative space */}
         <div className="sticky top-0 h-screen w-full flex flex-col justify-start pt-20 sm:pt-24 md:pt-28 pb-10 sm:pb-14 px-4 sm:px-8 md:px-12 select-none overflow-hidden z-10">
@@ -182,6 +233,40 @@ export const InteractiveAdStudioMock: React.FC = () => {
                     )}
                     <span className={`relative z-10 w-1.5 h-1.5 rounded-full transition-colors ${isActive ? 'bg-black' : 'bg-white/30'}`} />
                     <span className="relative z-10">{fmt.shortLabel}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Format Dwell & Sticky Scrub Rail */}
+            <div className="flex items-center justify-center gap-2 mt-3.5">
+              {CAMPAIGN_FORMATS.map((fmt, idx) => {
+                const isActive = activeFormatIndex === idx;
+                const zoneStart = idx === 0 ? 0 : idx === 1 ? 0.36 : 0.70;
+                const zoneEnd = idx === 0 ? 0.36 : idx === 1 ? 0.70 : 1.0;
+                const zoneProgress = Math.max(0, Math.min(1, (scrollProgress - zoneStart) / (zoneEnd - zoneStart)));
+
+                return (
+                  <button
+                    key={`rail-${fmt.id}`}
+                    onClick={() => handleJumpToFormat(idx)}
+                    className="group flex flex-col items-center gap-1 cursor-pointer focus:outline-none"
+                    aria-label={`Jump to ${fmt.label}`}
+                  >
+                    <div className="w-16 sm:w-24 h-[2px] sm:h-[3px] bg-white/10 rounded-full overflow-hidden relative transition-colors group-hover:bg-white/20">
+                      <div
+                        className={`absolute inset-y-0 left-0 transition-[width] duration-75 rounded-full ${
+                          isActive
+                            ? 'bg-accent shadow-[0_0_8px_#FBFF8D]'
+                            : scrollProgress > zoneEnd
+                            ? 'bg-white/35'
+                            : 'bg-transparent'
+                        }`}
+                        style={{
+                          width: isActive ? `${Math.round(zoneProgress * 100)}%` : scrollProgress > zoneEnd ? '100%' : '0%',
+                        }}
+                      />
+                    </div>
                   </button>
                 );
               })}
