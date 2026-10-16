@@ -10,21 +10,23 @@ An ultra-modern, production-grade AI jewelry catalog and marketing-ads studio en
 - **Interactive Live SKU Badge**: Floating live commercial valuation badge with 18K antique gold specs and instant inspect triggers.
 - **Top Ambient Progress Bar**: Smooth viewport scroll tracking in luminous `#FBFF8D` chartreuse.
 
-### 2. The 10-Angle Consistency Matrix (`prmpt_template.md` Inspired)
+### 2. The 12-Angle Consistency Matrix
 - **The Showstopper Section**: Solves the fundamental flaw of generative AI in luxury jewelry: stone facet warping and prong geometry distortion across angles.
-- **10 Distinct Perspectives**:
-  - `01`: 15° Elevated Overhead (Crown Facet Symmetry & Table Alignment)
-  - `02`: 30° Low Oblique Profile (Dispersion & Facet Fire)
-  - `03`: 45° Isometric Perspective (Architectural Contour)
-  - `04`: 60° Low Rake Angle (Pavé Milgrain Relief)
-  - `05`: 0° Ground-Parallel Elevation (Tension Setting Void & Arch)
-  - `06`: 90° Direct Overhead Plan (Zenith Culet Alignment & Hallmarking)
-  - `07`: 120° Reverse Three-Quarter (Under-Gallery Negative Space)
-  - `08`: 180° Rear Spine Profile (Band Ergonomics & Sizing Taper)
-  - `09`: 35° Dynamic Cant Angle (Specular Ribbon Glint & Roll-off)
-  - `10`: 25° Master Campaign Composition (Atmospheric Editorial Still)
-- **Scattered Grid & Scroll Scaling**: Cards scale dynamically from `scale(0) -> scale(1) -> scale(0)` upon viewport entry and exit.
-- **Full Telemetry Dossier Modal**: Click any angle to inspect camera elevation, azimuth, optical lens, and GIA proportion locks.
+- **12 Distinct Perspectives of Candidate B (18K Yellow Gold Ribbon Ring & Imperial Emerald)**:
+  - `01`: 45° Oblique Hero (Pleated Black Silk)
+  - `02`: 25° Horizontal Flat-Lay (Honed Volcanic Slate)
+  - `03`: 1:1 Extreme Macro (Micro-Pavé & Prong Architecture)
+  - `04`: 20° Lateral Profile (Gold Specular Curvature)
+  - `05`: Floating 3D CAD Match (Geometry Symmetry)
+  - `06`: 90° Zenith Top-Down (Interlocking Ribbon Twist)
+  - `07`: Contextual Editorial (High-Fashion Hand Fit)
+  - `08`: Interior Shank Macro (Hallmark & Comfort-Fit Polish)
+  - `09`: Specular Flare Macro (Table Reflection & Dispersion)
+  - `10`: 0° Direct Frontal Elevation (Symmetrical Catalog Master)
+  - `11`: 315° Reverse Oblique (Under-Gallery & Rear Architecture)
+  - `12`: Haute Joaillerie Presentation (Velvet Casket Vitrine)
+- **Scattered Grid & Scroll Scaling**: Cards scale dynamically with bottom-anchored entry and top-hit exit roll-offs.
+- **Full Telemetry Dossier Modal**: Click any angle to inspect camera elevation, azimuth, optical lens, and geometry locks.
 
 ### 3. Interactive Ad Studio Mock
 - **Multi-Variant Pedestals**: Real-time switching between `Variant A: Raw Black Silk`, `Variant B: Charcoal Slate`, and `Variant C: Ambient Hand`.

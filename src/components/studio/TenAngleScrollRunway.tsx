@@ -29,9 +29,9 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
 
   // Linear Scroll-Driven Scale with Bottom Anchoring & Top-Hit Disappearance
   useEffect(() => {
-    let animFrame: number;
+    let animFrame: number | null = null;
 
-    const onScrollTick = () => {
+    const updateCards = () => {
       const vh = window.innerHeight;
       const cards = cardElementsRef.current;
 
@@ -62,16 +62,32 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
         el.style.transform = `scale(${scale})`;
         el.style.opacity = `${opacity}`;
       }
-
-      animFrame = requestAnimationFrame(onScrollTick);
+      animFrame = null;
     };
 
-    animFrame = requestAnimationFrame(onScrollTick);
-    return () => cancelAnimationFrame(animFrame);
+    const requestTick = () => {
+      if (animFrame === null) {
+        animFrame = requestAnimationFrame(updateCards);
+      }
+    };
+
+    // Initial calculation on mount
+    requestTick();
+
+    window.addEventListener('scroll', requestTick, { passive: true });
+    window.addEventListener('resize', requestTick, { passive: true });
+
+    return () => {
+      if (animFrame !== null) cancelAnimationFrame(animFrame);
+      window.removeEventListener('scroll', requestTick);
+      window.removeEventListener('resize', requestTick);
+    };
   }, []);
 
   return (
     <section id="ten-angle-runway" ref={containerRef} className="py-24 md:py-36 bg-black text-white border-b border-hairline relative select-none">
+      {/* Anchor alias for #runway */}
+      <div id="runway" className="absolute -top-24 pointer-events-none" />
       
       {/* Subtle Ambient Radial Highlight */}
       <div className="absolute inset-0 bg-radial-gradient from-accent/[0.025] via-transparent to-transparent pointer-events-none" />
@@ -141,7 +157,7 @@ export const TenAngleScrollRunway: React.FC<Props> = ({ onSelectAngle }) => {
                     {/* Minimalist Top Tag: Clean Numeral & Angle Name */}
                     <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
                       <span className="font-serif text-2xl text-accent font-normal drop-shadow">
-                        0{angle.index}
+                        {String(angle.index).padStart(2, '0')}
                       </span>
                       <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/80 px-2 py-0.5 rounded-sm bg-black/60 backdrop-blur-md border border-white/10">
                         {angle.angleTag}

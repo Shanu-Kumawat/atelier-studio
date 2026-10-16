@@ -76,7 +76,7 @@ export const AngleDetailModal: React.FC<Props> = ({ angle, onClose, onNavigate }
                 />
 
                 <div className="absolute top-3 left-3 bg-black/80 px-2.5 py-1 rounded-sm border border-white/10 text-xs font-mono text-accent">
-                  0{angle.index} · {angle.angleTag}
+                  {String(angle.index).padStart(2, '0')} · {angle.angleTag}
                 </div>
 
                 <button
@@ -125,7 +125,7 @@ export const AngleDetailModal: React.FC<Props> = ({ angle, onClose, onNavigate }
               <div>
                 <div className="flex items-center gap-1.5 text-accent text-[11px] font-mono tracking-widest uppercase mb-2">
                   <Camera className="w-3.5 h-3.5" />
-                  <span>ORBITAL ANGLE 0{angle.index} OF 12</span>
+                  <span>ORBITAL ANGLE {String(angle.index).padStart(2, '0')} OF 12</span>
                 </div>
 
                 <h3 className="font-serif text-2xl sm:text-3xl text-white font-normal mb-2 leading-snug">

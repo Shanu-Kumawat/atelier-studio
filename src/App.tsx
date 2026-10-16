@@ -27,7 +27,7 @@ export const App: React.FC = () => {
         {/* 3. Cinematic Hero with Video Background (soscale & luxury-focus inspired) */}
         <CinematicHero />
 
-        {/* 4. 10-Angle Multi-Perspective Scroll Runway (prmpt_template scattered grid & scaling) */}
+        {/* 4. 12-Angle Multi-Perspective Scroll Runway (Scattered Grid & Scaling) */}
         <TenAngleScrollRunway onSelectAngle={setSelectedAngle} />
 
         {/* 5. Draggable Before/After Transformation Slider & Economics */}
