@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
 interface CampaignFormat {
@@ -53,6 +53,14 @@ export const InteractiveAdStudioMock: React.FC = () => {
 
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
+
+  // Preload all campaign format images for instant zero-latency switching
+  useEffect(() => {
+    CAMPAIGN_FORMATS.forEach((fmt) => {
+      const img = new window.Image();
+      img.src = fmt.image;
+    });
+  }, []);
 
   // Smooth Scroll Scrub Engine (scroll-world architecture)
   useEffect(() => {
@@ -191,20 +199,32 @@ export const InteractiveAdStudioMock: React.FC = () => {
                 transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 className={`relative ${current.aspectClass} h-full max-w-full rounded-sm overflow-hidden bg-black border border-white/20 shadow-2xl group flex items-center justify-center`}
               >
-                {/* Active Campaign Image with Crossfade */}
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={current.id}
-                    src={current.image}
-                    alt={current.label}
-                    initial={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, scale: 1.02, filter: 'blur(4px)' }}
-                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full h-full object-contain pointer-events-none select-none"
-                    draggable={false}
-                  />
-                </AnimatePresence>
+                {/* Active Campaign Images: Concurrent Crossfade (Zero Blank Gap) */}
+                {CAMPAIGN_FORMATS.map((fmt, idx) => {
+                  const isCurrent = activeFormatIndex === idx;
+                  return (
+                    <motion.img
+                      key={fmt.id}
+                      src={fmt.image}
+                      alt={fmt.label}
+                      initial={false}
+                      animate={{
+                        opacity: isCurrent ? 1 : 0,
+                        scale: isCurrent ? 1 : 1.025,
+                        filter: isCurrent ? 'blur(0px)' : 'blur(2px)',
+                      }}
+                      transition={{
+                        duration: 0.45,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+                      draggable={false}
+                      style={{
+                        zIndex: isCurrent ? 2 : 1,
+                      }}
+                    />
+                  );
+                })}
 
                 {/* Subtle Architectural Corner Brackets */}
                 <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l border-white/40 pointer-events-none" />
