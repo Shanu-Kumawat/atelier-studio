@@ -31,7 +31,7 @@ const CAMPAIGN_FORMATS: CampaignFormat[] = [
     shortLabel: '4:5 Social Drop',
     ratio: '1080 × 1350 px',
     aspectClass: 'aspect-[4/5]',
-    channel: 'Dark-Mode Mobile Feed & High-Conversion Stories',
+    channel: 'High-Conversion Social Stories & Luxury Mobile Ad Feed',
     image: '/assets/ad-social.jpg',
   },
   {
