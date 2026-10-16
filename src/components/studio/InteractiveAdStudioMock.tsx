@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
 interface CampaignFormat {
@@ -196,58 +196,104 @@ export const InteractiveAdStudioMock: React.FC = () => {
               
               <motion.div
                 layout
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className={`relative ${current.aspectClass} h-full max-w-full rounded-sm overflow-hidden bg-black border border-white/20 shadow-2xl group flex items-center justify-center`}
+                transition={{
+                  layout: { type: 'spring', stiffness: 220, damping: 28, mass: 0.85 }
+                }}
+                className={`relative ${current.aspectClass} h-full max-w-full rounded-sm overflow-hidden bg-[#0d0c0a] border border-white/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8),0_0_40px_rgba(251,255,141,0.06)] group flex items-center justify-center`}
               >
-                {/* Active Campaign Images: Concurrent Crossfade (Zero Blank Gap) */}
+                {/* Active Campaign Images: Cinematic Rack-Focus Crossfade */}
                 {CAMPAIGN_FORMATS.map((fmt, idx) => {
                   const isCurrent = activeFormatIndex === idx;
+                  const isPrev = (activeFormatIndex - 1 + CAMPAIGN_FORMATS.length) % CAMPAIGN_FORMATS.length === idx;
                   return (
-                    <motion.img
+                    <motion.div
                       key={fmt.id}
-                      src={fmt.image}
-                      alt={fmt.label}
                       initial={false}
                       animate={{
                         opacity: isCurrent ? 1 : 0,
-                        scale: isCurrent ? 1 : 1.025,
-                        filter: isCurrent ? 'blur(0px)' : 'blur(2px)',
+                        scale: isCurrent ? 1 : 1.05,
+                        y: isCurrent ? 0 : (idx < activeFormatIndex ? -12 : 12),
+                        filter: isCurrent ? 'blur(0px)' : 'blur(6px)',
                       }}
                       transition={{
-                        duration: 0.45,
-                        ease: [0.16, 1, 0.3, 1],
+                        duration: 0.65,
+                        ease: [0.19, 1, 0.22, 1],
                       }}
-                      className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
-                      draggable={false}
+                      className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden"
                       style={{
-                        zIndex: isCurrent ? 2 : 1,
+                        zIndex: isCurrent ? 2 : (isPrev ? 1 : 0),
+                        willChange: 'transform, opacity, filter',
                       }}
-                    />
+                    >
+                      <img
+                        src={fmt.image}
+                        alt={fmt.label}
+                        className="w-full h-full object-cover select-none pointer-events-none"
+                        draggable={false}
+                      />
+                    </motion.div>
                   );
                 })}
 
-                {/* Subtle Architectural Corner Brackets */}
-                <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l border-white/40 pointer-events-none" />
-                <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t border-r border-white/40 pointer-events-none" />
-                <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l border-white/40 pointer-events-none" />
-                <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r border-white/40 pointer-events-none" />
+                {/* Luxury Studio Prismatic Glint Sweep on Format Change */}
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    key={`glint-${activeFormatIndex}`}
+                    initial={{ x: '-130%', opacity: 0 }}
+                    animate={{ x: '170%', opacity: [0, 0.6, 0.85, 0.4, 0] }}
+                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-y-0 w-3/4 pointer-events-none z-10 -skew-x-12 bg-gradient-to-r from-transparent via-accent/[0.22] via-white/[0.3] to-transparent mix-blend-overlay"
+                  />
+                </AnimatePresence>
 
-                {/* The Single Overlay Element: Exact Format Dimension Badge */}
-                <div className="absolute top-3.5 left-3.5 pointer-events-none">
-                  <span className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-white/90 px-3 py-1 rounded-sm bg-black/80 backdrop-blur-md border border-white/15 shadow-lg flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                    <span>{current.ratio}</span>
-                  </span>
+                {/* Subtle Architectural Corner Viewfinder Brackets with Spring Lock */}
+                <motion.div
+                  key={`brackets-${activeFormatIndex}`}
+                  initial={{ scale: 1.15, opacity: 0.6 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                  className="absolute inset-0 pointer-events-none z-20"
+                >
+                  <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l border-white/50" />
+                  <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t border-r border-white/50" />
+                  <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l border-white/50" />
+                  <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r border-white/50" />
+                </motion.div>
+
+                {/* Exact Format Dimension Badge with Smooth Animated Metadata Transition */}
+                <div className="absolute top-3.5 left-3.5 pointer-events-none z-20 overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={current.ratio}
+                      initial={{ opacity: 0, y: -6, filter: 'blur(2px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: 6, filter: 'blur(2px)' }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                      className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-white/90 px-3 py-1 rounded-sm bg-black/85 backdrop-blur-md border border-white/15 shadow-lg flex items-center gap-1.5"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                      <span>{current.ratio}</span>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               </motion.div>
 
             </div>
 
-            {/* Clean Under-Vitrine Descriptor */}
-            <div className="text-center mt-3.5">
-              <p className="text-xs text-white/50 font-sans font-light tracking-wide">
-                <span className="text-white font-medium">{current.shortLabel}</span> · {current.channel}
-              </p>
+            {/* Clean Under-Vitrine Descriptor with Smooth Slide-Fade */}
+            <div className="text-center mt-3.5 h-6 flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={current.id}
+                  initial={{ opacity: 0, y: 6, filter: 'blur(3px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -6, filter: 'blur(3px)' }}
+                  transition={{ duration: 0.35, ease: [0.19, 1, 0.22, 1] }}
+                  className="text-xs text-white/50 font-sans font-light tracking-wide"
+                >
+                  <span className="text-white font-medium">{current.shortLabel}</span> · {current.channel}
+                </motion.p>
+              </AnimatePresence>
             </div>
 
           </div>
