@@ -34,23 +34,10 @@ export const BeforeAfterComparison: React.FC = () => {
       lastScrollYRef.current = window.scrollY;
     };
 
-    let isRunning = false;
-
-    const startLoop = () => {
-      if (!isRunning) {
-        isRunning = true;
-        animFrame = requestAnimationFrame(loop);
-      }
-    };
-
     const loop = () => {
       // Lerp for buttery smooth inertia
       const diff = targetProgressRef.current - currentProgressRef.current;
-      if (Math.abs(diff) < 0.0002) {
-        currentProgressRef.current = targetProgressRef.current;
-      } else {
-        currentProgressRef.current += diff * 0.12;
-      }
+      currentProgressRef.current += diff * 0.12;
 
       const progress = currentProgressRef.current;
       setScrollProgress(progress);
@@ -67,16 +54,12 @@ export const BeforeAfterComparison: React.FC = () => {
         }
       }
 
-      if (currentProgressRef.current !== targetProgressRef.current) {
-        animFrame = requestAnimationFrame(loop);
-      } else {
-        isRunning = false;
-      }
+      animFrame = requestAnimationFrame(loop);
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-    startLoop();
+    animFrame = requestAnimationFrame(loop);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
