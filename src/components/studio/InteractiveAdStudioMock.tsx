@@ -276,93 +276,64 @@ export const InteractiveAdStudioMock: React.FC = () => {
           {/* Central Hero Stage: The Image is the Sole Centerpiece */}
           <div className="max-w-5xl mx-auto w-full my-auto relative z-20 flex flex-col items-center justify-center px-2">
             
-            {/* Morphic Aspect Vitrine Container */}
+            {/* Native Aspect Ratio Showcase Stage (100% distortion-free, zero rubber-banding) */}
             <div className="relative h-[46vh] sm:h-[50vh] md:h-[54vh] max-h-[540px] w-full flex items-center justify-center">
-              
-              <motion.div
-                layout
-                transition={{
-                  layout: { type: 'spring', stiffness: 220, damping: 28, mass: 0.85 }
-                }}
-                className={`relative ${current.aspectClass} h-full max-w-full rounded-sm overflow-hidden bg-[#0d0c0a] border border-white/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8),0_0_40px_rgba(251,255,141,0.06)] group flex items-center justify-center`}
-              >
-                {/* Active Campaign Images: Cinematic Rack-Focus Crossfade */}
-                {CAMPAIGN_FORMATS.map((fmt, idx) => {
-                  const isCurrent = activeFormatIndex === idx;
-                  const isPrev = (activeFormatIndex - 1 + CAMPAIGN_FORMATS.length) % CAMPAIGN_FORMATS.length === idx;
-                  return (
-                    <motion.div
-                      key={fmt.id}
-                      initial={false}
-                      animate={{
-                        opacity: isCurrent ? 1 : 0,
-                        scale: isCurrent ? 1 : 1.05,
-                        y: isCurrent ? 0 : (idx < activeFormatIndex ? -12 : 12),
-                        filter: isCurrent ? 'blur(0px)' : 'blur(6px)',
-                      }}
-                      transition={{
-                        duration: 0.65,
-                        ease: [0.19, 1, 0.22, 1],
-                      }}
-                      className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden"
-                      style={{
-                        zIndex: isCurrent ? 2 : (isPrev ? 1 : 0),
-                        willChange: 'transform, opacity, filter',
-                      }}
-                    >
-                      <img
-                        src={fmt.image}
-                        alt={fmt.label}
-                        className="w-full h-full object-cover select-none pointer-events-none"
-                        draggable={false}
-                      />
-                    </motion.div>
-                  );
-                })}
-
-                {/* Luxury Studio Prismatic Glint Sweep on Format Change */}
-                <AnimatePresence mode="popLayout">
+              {CAMPAIGN_FORMATS.map((fmt, idx) => {
+                const isCurrent = activeFormatIndex === idx;
+                return (
                   <motion.div
-                    key={`glint-${activeFormatIndex}`}
-                    initial={{ x: '-130%', opacity: 0 }}
-                    animate={{ x: '170%', opacity: [0, 0.6, 0.85, 0.4, 0] }}
-                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute inset-y-0 w-3/4 pointer-events-none z-10 -skew-x-12 bg-gradient-to-r from-transparent via-accent/[0.22] via-white/[0.3] to-transparent mix-blend-overlay"
-                  />
-                </AnimatePresence>
+                    key={fmt.id}
+                    initial={false}
+                    animate={{
+                      opacity: isCurrent ? 1 : 0,
+                      scale: isCurrent ? 1 : 0.94,
+                      filter: isCurrent ? 'blur(0px)' : 'blur(4px)',
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className={`absolute ${fmt.aspectClass} h-full max-w-full rounded-sm overflow-hidden bg-[#0d0c0a] border border-white/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8),0_0_40px_rgba(251,255,141,0.06)] group flex items-center justify-center`}
+                    style={{
+                      zIndex: isCurrent ? 10 : 1,
+                      pointerEvents: isCurrent ? 'auto' : 'none',
+                    }}
+                  >
+                    {/* Native Aspect Campaign Master — Zero Stretch or Shrink */}
+                    <img
+                      src={fmt.image}
+                      alt={fmt.label}
+                      className="w-full h-full object-cover select-none pointer-events-none"
+                      draggable={false}
+                    />
 
-                {/* Subtle Architectural Corner Viewfinder Brackets with Spring Lock */}
-                <motion.div
-                  key={`brackets-${activeFormatIndex}`}
-                  initial={{ scale: 1.15, opacity: 0.6 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                  className="absolute inset-0 pointer-events-none z-20"
-                >
-                  <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l border-white/50" />
-                  <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t border-r border-white/50" />
-                  <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l border-white/50" />
-                  <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r border-white/50" />
-                </motion.div>
+                    {/* Luxury Studio Prismatic Glint Sweep on Active Format */}
+                    {isCurrent && (
+                      <motion.div
+                        key={`glint-${fmt.id}`}
+                        initial={{ x: '-130%', opacity: 0 }}
+                        animate={{ x: '170%', opacity: [0, 0.6, 0.85, 0.4, 0] }}
+                        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                        className="absolute inset-y-0 w-3/4 pointer-events-none z-10 -skew-x-12 bg-gradient-to-r from-transparent via-accent/[0.22] via-white/[0.3] to-transparent mix-blend-overlay"
+                      />
+                    )}
 
-                {/* Exact Format Dimension Badge with Smooth Animated Metadata Transition */}
-                <div className="absolute top-3.5 left-3.5 pointer-events-none z-20 overflow-hidden">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={current.ratio}
-                      initial={{ opacity: 0, y: -6, filter: 'blur(2px)' }}
-                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                      exit={{ opacity: 0, y: 6, filter: 'blur(2px)' }}
-                      transition={{ duration: 0.3, ease: 'easeOut' }}
-                      className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-white/90 px-3 py-1 rounded-sm bg-black/85 backdrop-blur-md border border-white/15 shadow-lg flex items-center gap-1.5"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                      <span>{current.ratio}</span>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
+                    {/* Subtle Architectural Corner Viewfinder Brackets */}
+                    <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l border-white/50 pointer-events-none z-20" />
+                    <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t border-r border-white/50 pointer-events-none z-20" />
+                    <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l border-white/50 pointer-events-none z-20" />
+                    <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r border-white/50 pointer-events-none z-20" />
 
+                    {/* Exact Format Dimension Badge */}
+                    <div className="absolute top-3.5 left-3.5 pointer-events-none z-20">
+                      <span className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-white/90 px-3 py-1 rounded-sm bg-black/85 backdrop-blur-md border border-white/15 shadow-lg flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                        <span>{fmt.ratio}</span>
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Clean Under-Vitrine Descriptor with Smooth Slide-Fade */}
