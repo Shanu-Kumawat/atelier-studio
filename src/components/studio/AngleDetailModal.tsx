@@ -69,9 +69,14 @@ export const AngleDetailModal: React.FC<Props> = ({ angle, onClose, onNavigate }
             <div className="w-full lg:w-3/5 p-6 sm:p-8 bg-black flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 relative">
               
               <div className="relative aspect-square w-full rounded-sm overflow-hidden flex items-center justify-center bg-[#050505] border border-white/5">
-                <img
+                {/* Slow Ken Burns drift while the dossier is open */}
+                <motion.img
+                  key={angle.image}
                   src={angle.image}
                   alt={angle.title}
+                  initial={{ scale: 1.04, x: -6, y: -4 }}
+                  animate={{ scale: 1, x: 0, y: 0 }}
+                  transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
                   className="w-full h-full object-contain filter brightness-105"
                 />
 
@@ -136,25 +141,26 @@ export const AngleDetailModal: React.FC<Props> = ({ angle, onClose, onNavigate }
                   {angle.notes}
                 </p>
 
-                {/* 2x2 Specs Grid */}
+                {/* 2x2 Specs Grid with staggered cascade entrance */}
                 <div className="border border-white/10 bg-black/60 rounded-sm mb-6 overflow-hidden">
                   <div className="grid grid-cols-2 text-xs font-mono">
-                    <div className="p-3 border-r border-b border-white/10">
-                      <span className="block text-[9px] uppercase tracking-wider text-white/40">Elevation</span>
-                      <span className="text-white mt-0.5 block">{angle.elevation}</span>
-                    </div>
-                    <div className="p-3 border-b border-white/10">
-                      <span className="block text-[9px] uppercase tracking-wider text-white/40">Azimuth</span>
-                      <span className="text-white mt-0.5 block">{angle.azimuth}</span>
-                    </div>
-                    <div className="p-3 border-r border-white/10">
-                      <span className="block text-[9px] uppercase tracking-wider text-white/40">Lens</span>
-                      <span className="text-white mt-0.5 block truncate">{angle.lens}</span>
-                    </div>
-                    <div className="p-3">
-                      <span className="block text-[9px] uppercase tracking-wider text-white/40">Verification</span>
-                      <span className="text-accent mt-0.5 block truncate font-semibold">{angle.verification}</span>
-                    </div>
+                    {[
+                      { label: 'Elevation', node: <span className="text-white mt-0.5 block">{angle.elevation}</span>, cls: 'p-3 border-r border-b border-white/10' },
+                      { label: 'Azimuth', node: <span className="text-white mt-0.5 block">{angle.azimuth}</span>, cls: 'p-3 border-b border-white/10' },
+                      { label: 'Lens', node: <span className="text-white mt-0.5 block truncate">{angle.lens}</span>, cls: 'p-3 border-r border-white/10' },
+                      { label: 'Verification', node: <span className="text-accent mt-0.5 block truncate font-semibold">{angle.verification}</span>, cls: 'p-3' },
+                    ].map((cell, i) => (
+                      <motion.div
+                        key={cell.label}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.45, delay: 0.15 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                        className={cell.cls}
+                      >
+                        <span className="block text-[9px] uppercase tracking-wider text-white/40">{cell.label}</span>
+                        {cell.node}
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
 

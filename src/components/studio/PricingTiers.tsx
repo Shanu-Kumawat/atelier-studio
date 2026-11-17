@@ -1,6 +1,24 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, ArrowRight, ShieldCheck, FileCheck, Receipt } from 'lucide-react';
+import { Magnetic } from './Magnetic';
+import { RevealText } from './RevealText';
+
+// Mouse-tracked spotlight glow for tier cards (fine pointers only)
+function useSpotlight() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    const el = ref.current;
+    if (!el) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+    el.style.setProperty('--my', `${e.clientY - rect.top}px`);
+  };
+
+  return { ref, onMouseMove };
+}
 
 interface PricingTier {
   id: string;
@@ -13,6 +31,95 @@ interface PricingTier {
   features: string[];
   cta: string;
 }
+
+// Single tier card with a mouse-tracked spotlight glow
+const SpotlightTier: React.FC<{ tier: PricingTier; isFeatured: boolean }> = ({ tier, isFeatured }) => {
+  const { ref, onMouseMove } = useSpotlight();
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={onMouseMove}
+      variants={{
+        hidden: { opacity: 0, y: 36, filter: 'blur(6px)' },
+        visible: {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+        },
+      }}
+      className={`relative rounded-sm p-8 sm:p-9 flex flex-col justify-between transition-all duration-500 group spotlight-card ${isFeatured ? 'spotlight-strong' : ''} ${
+        isFeatured
+          ? 'bg-[#0B0B0B] text-white border border-accent shadow-[0_0_40px_rgba(251,255,141,0.12)] hover:shadow-[0_0_55px_rgba(251,255,141,0.22)] lg:-translate-y-2 z-10'
+          : 'bg-[#060606] text-white border border-white/10 hover:border-white/30 hover:shadow-[0_12px_36px_rgba(0,0,0,0.8)]'
+      }`}
+    >
+      {/* Cursor-tracked spotlight wash */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 spotlight-glow"
+      />
+
+      {/* Featured Badge */}
+      {isFeatured && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent text-black px-4 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase font-semibold flex items-center gap-1.5 shadow-lg z-10">
+          <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+          <span>{tier.badge}</span>
+        </div>
+      )}
+
+      <div className="relative z-10">
+        <div className="mb-6">
+          <h3 className="font-serif text-2xl sm:text-3xl text-white mb-2 font-normal">
+            {tier.name}
+          </h3>
+          <p className="text-xs text-white/50 font-sans font-light leading-relaxed">
+            {tier.subtitle}
+          </p>
+        </div>
+
+        {/* Price in INR */}
+        <div className="mb-8 pb-6 border-b border-white/10">
+          <div className="flex items-baseline gap-2">
+            <span className="font-serif text-4xl sm:text-5xl text-accent font-normal tracking-tight">
+              {tier.price}
+            </span>
+            <span className="text-[11px] font-mono uppercase text-white/40 tracking-wider">
+              / {tier.period}
+            </span>
+          </div>
+        </div>
+
+        {/* Features List */}
+        <ul className="space-y-3.5 mb-10 text-xs font-sans">
+          {tier.features.map((feature, fIdx) => (
+            <li key={fIdx} className="flex items-start gap-3">
+              <Check className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
+              <span className="text-white/80 font-light leading-relaxed">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Call to Action Button */}
+      <div className="relative z-10">
+        <Magnetic strength={5}>
+          <a
+            href="#brief"
+            className={`w-full py-4 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all duration-300 text-center flex items-center justify-center gap-2 group active:scale-95 cursor-pointer ${
+              isFeatured
+                ? 'bg-accent text-black hover:bg-white shadow-lg hover:shadow-[0_0_28px_rgba(251,255,141,0.4)]'
+                : 'border border-white/20 text-white hover:border-accent hover:text-accent hover:bg-white/5 hover:shadow-[0_0_20px_rgba(251,255,141,0.15)]'
+            }`}
+          >
+            <span>{tier.cta}</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
+          </a>
+        </Magnetic>
+      </div>
+    </motion.div>
+  );
+};
 
 export const PricingTiers: React.FC = () => {
   const tiers: PricingTier[] = [
@@ -85,7 +192,10 @@ export const PricingTiers: React.FC = () => {
           </div>
 
           <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-tight mb-4">
-            Predictable unit economics. <span className="italic font-light text-accent">Zero studio overhead.</span>
+            Predictable unit economics.{' '}
+            <span className="italic font-light text-accent">
+              <RevealText inView delay={0.2}>Zero studio overhead.</RevealText>
+            </span>
           </h2>
 
           <p className="text-white/50 text-xs sm:text-sm font-sans max-w-xl mx-auto font-light leading-relaxed">
@@ -113,77 +223,7 @@ export const PricingTiers: React.FC = () => {
           {tiers.map((tier) => {
             const isFeatured = !!tier.featured;
             return (
-              <motion.div
-                key={tier.id}
-                variants={{
-                  hidden: { opacity: 0, y: 36, filter: 'blur(6px)' },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    filter: 'blur(0px)',
-                    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
-                  },
-                }}
-                className={`relative rounded-sm p-8 sm:p-9 flex flex-col justify-between transition-all duration-500 group ${
-                  isFeatured
-                    ? 'bg-[#0B0B0B] text-white border border-accent shadow-[0_0_40px_rgba(251,255,141,0.12)] hover:shadow-[0_0_55px_rgba(251,255,141,0.22)] lg:-translate-y-2 z-10'
-                    : 'bg-[#060606] text-white border border-white/10 hover:border-white/30 hover:shadow-[0_12px_36px_rgba(0,0,0,0.8)]'
-                }`}
-              >
-                {/* Featured Badge */}
-                {isFeatured && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent text-black px-4 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase font-semibold flex items-center gap-1.5 shadow-lg">
-                    <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
-                    <span>{tier.badge}</span>
-                  </div>
-                )}
-
-                <div>
-                  <div className="mb-6">
-                    <h3 className="font-serif text-2xl sm:text-3xl text-white mb-2 font-normal">
-                      {tier.name}
-                    </h3>
-                    <p className="text-xs text-white/50 font-sans font-light leading-relaxed">
-                      {tier.subtitle}
-                    </p>
-                  </div>
-
-                  {/* Price in INR */}
-                  <div className="mb-8 pb-6 border-b border-white/10">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-serif text-4xl sm:text-5xl text-accent font-normal tracking-tight">
-                        {tier.price}
-                      </span>
-                      <span className="text-[11px] font-mono uppercase text-white/40 tracking-wider">
-                        / {tier.period}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Features List */}
-                  <ul className="space-y-3.5 mb-10 text-xs font-sans">
-                    {tier.features.map((feature, fIdx) => (
-                      <li key={fIdx} className="flex items-start gap-3">
-                        <Check className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
-                        <span className="text-white/80 font-light leading-relaxed">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Call to Action Button */}
-                <a
-                  href="#brief"
-                  className={`w-full py-4 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all duration-300 text-center flex items-center justify-center gap-2 group active:scale-95 cursor-pointer ${
-                    isFeatured
-                      ? 'bg-accent text-black hover:bg-white shadow-lg hover:shadow-[0_0_28px_rgba(251,255,141,0.4)]'
-                      : 'border border-white/20 text-white hover:border-accent hover:text-accent hover:bg-white/5 hover:shadow-[0_0_20px_rgba(251,255,141,0.15)]'
-                  }`}
-                >
-                  <span>{tier.cta}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
-                </a>
-              </motion.div>
+              <SpotlightTier key={tier.id} tier={tier} isFeatured={isFeatured} />
             );
           })}
         </motion.div>
@@ -194,7 +234,7 @@ export const PricingTiers: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-14 sm:mt-18 p-6 rounded-sm bg-white/[0.02] border border-white/10 flex flex-wrap items-center justify-between gap-6 text-xs font-mono text-white/50"
+          className="mt-14 sm:mt-16 p-6 rounded-sm bg-white/[0.02] border border-white/10 flex flex-wrap items-center justify-between gap-6 text-xs font-mono text-white/50"
         >
           <div className="flex items-center gap-2.5 hover:text-white/80 transition-colors cursor-default group">
             <ShieldCheck className="w-4 h-4 text-accent shrink-0 group-hover:scale-110 transition-transform" />

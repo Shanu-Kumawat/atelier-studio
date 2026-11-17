@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TopProgressBar } from './components/studio/TopProgressBar';
 import { StudioNavbar } from './components/studio/StudioNavbar';
 import { CinematicHero } from './components/studio/CinematicHero';
@@ -11,14 +11,39 @@ import { BriefIntakePortal } from './components/studio/BriefIntakePortal';
 import { StudioFooter } from './components/studio/StudioFooter';
 import { AngleDetailModal } from './components/studio/AngleDetailModal';
 import { AngleSpec } from './data/angles';
+import { initLenis, destroyLenis, scrollToId } from './lib/lenis';
+import { LuxuryCursor } from './components/studio/LuxuryCursor';
 
 export const App: React.FC = () => {
   const [selectedAngle, setSelectedAngle] = useState<AngleSpec | null>(null);
+
+  // Buttery inertial scrolling (skipped under prefers-reduced-motion)
+  useEffect(() => {
+    initLenis();
+    return () => destroyLenis();
+  }, []);
+
+  // Route in-page anchor links through Lenis with a fixed-header offset
+  useEffect(() => {
+    const handleAnchorClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]');
+      if (!anchor) return;
+      const id = anchor.getAttribute('href')!.slice(1);
+      if (!document.getElementById(id)) return;
+      e.preventDefault();
+      scrollToId(id, id === 'hero' ? 0 : -70);
+    };
+    document.addEventListener('click', handleAnchorClick);
+    return () => document.removeEventListener('click', handleAnchorClick);
+  }, []);
 
   return (
     <div className="min-h-screen bg-obsidian text-white selection:bg-accent selection:text-black">
       {/* 1. Top Global Ambient Progress Bar */}
       <TopProgressBar />
+
+      {/* 0. Bespoke Luxury Cursor (fine pointers only) */}
+      <LuxuryCursor />
 
       {/* 2. Studio Minimalist Navigation */}
       <StudioNavbar />

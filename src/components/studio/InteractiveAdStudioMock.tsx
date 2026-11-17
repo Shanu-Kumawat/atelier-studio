@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import { getLenis } from '../../lib/lenis';
+import { RevealText } from './RevealText';
 
 interface CampaignFormat {
   id: string;
@@ -94,10 +96,13 @@ export const InteractiveAdStudioMock: React.FC = () => {
           // If resting slightly off center, gently snap to the active format dwell center
           if (Math.abs(currentProgress - target) > 0.06 && Math.abs(currentProgress - target) < 0.18) {
             const top = window.scrollY + currentRect.top;
-            window.scrollTo({
-              top: top + target * currentMax,
-              behavior: 'smooth',
-            });
+            const finalTop = top + target * currentMax;
+            const lenis = getLenis();
+            if (lenis) {
+              lenis.scrollTo(finalTop, { duration: 0.8 });
+            } else {
+              window.scrollTo({ top: finalTop, behavior: 'smooth' });
+            }
           }
         }, 160);
       }
@@ -166,10 +171,12 @@ export const InteractiveAdStudioMock: React.FC = () => {
     activeIndexRef.current = index;
     setActiveFormatIndex(index);
 
-    window.scrollTo({
-      top: scrollTop + targetOffset,
-      behavior: 'smooth',
-    });
+    const lenis = getLenis();
+    if (lenis) {
+      lenis.scrollTo(scrollTop + targetOffset, { duration: 1.1 });
+    } else {
+      window.scrollTo({ top: scrollTop + targetOffset, behavior: 'smooth' });
+    }
   };
 
   const current = CAMPAIGN_FORMATS[activeFormatIndex];
@@ -186,7 +193,7 @@ export const InteractiveAdStudioMock: React.FC = () => {
           {/* Subtle Ambient Atmosphere Glow */}
           <div className="absolute inset-0 bg-radial-gradient from-accent/[0.04] via-transparent to-transparent pointer-events-none" />
           <div
-            className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-accent/[0.03] blur-[150px] rounded-full pointer-events-none transition-transform duration-700"
+            className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-accent/[0.03] blur-[150px] rounded-full pointer-events-none"
             style={{
               transform: `translate(-50%, -50%) translateX(${(scrollProgress - 0.5) * 160}px)`,
               opacity: 0.35 + scrollProgress * 0.45,
@@ -201,24 +208,27 @@ export const InteractiveAdStudioMock: React.FC = () => {
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-4xl mx-auto w-full text-center relative z-20 shrink-0"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-3.5 sm:mb-4.5 shadow-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase mb-3.5 sm:mb-5 shadow-sm">
               <Sparkles className="w-3 h-3 text-accent animate-pulse" />
               <span>AUTONOMOUS MULTI-FORMAT CAMPAIGN MATRIX</span>
             </div>
 
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal tracking-tight leading-tight mb-6 sm:mb-7">
-              One master CAD. <span className="italic font-light text-accent">Infinite campaign formats.</span>
+              One master CAD.{' '}
+              <span className="italic font-light text-accent">
+                <RevealText inView delay={0.2}>Infinite campaign formats.</RevealText>
+              </span>
             </h2>
 
             {/* Unified Interactive Format Dock with Spring Gliding Indicator */}
-            <div className="inline-flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-2xl">
+            <div className="inline-flex flex-wrap items-center justify-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-2xl max-w-full">
               {CAMPAIGN_FORMATS.map((fmt, idx) => {
                 const isActive = activeFormatIndex === idx;
                 return (
                   <button
                     key={fmt.id}
                     onClick={() => handleJumpToFormat(idx)}
-                    className={`relative px-4 sm:px-5 py-2 rounded-full text-[10px] sm:text-[11px] font-mono uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer active:scale-95 ${
+                    className={`relative px-3 sm:px-5 py-2 rounded-full text-[10px] sm:text-[11px] font-mono uppercase tracking-wider whitespace-nowrap transition-all duration-200 flex items-center gap-2 cursor-pointer active:scale-95 ${
                       isActive
                         ? 'text-black font-semibold'
                         : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'

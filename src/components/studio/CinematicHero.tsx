@@ -1,10 +1,25 @@
 import React, { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowDown, ArrowRight, Play, Pause } from 'lucide-react';
+import { RevealText } from './RevealText';
+import { Magnetic } from './Magnetic';
 
 export const CinematicHero: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Scroll parallax: content drifts up while the backdrop gently zooms out
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
+  const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
+
+  // Mouse-tracked ambient glow (fine pointers only, set up imperatively)
+  const glowRef = useRef<HTMLDivElement>(null);
 
   const toggleVideo = () => {
     if (!videoRef.current) return;
@@ -17,12 +32,28 @@ export const CinematicHero: React.FC = () => {
     }
   };
 
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const glow = glowRef.current;
+    if (!glow) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const relX = (e.clientX - rect.left) / rect.width - 0.5;
+    const relY = (e.clientY - rect.top) / rect.height - 0.5;
+    glow.style.transform = `translate3d(${relX * 60}px, ${relY * 40}px, 0)`;
+  };
+
   return (
-    <section id="hero" className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#020202]">
-      
+    <section
+      id="hero"
+      ref={sectionRef}
+      onMouseMove={handleMouseMove}
+      className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#020202]"
+    >
+
       {/* Background Ambient Cinema */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <video
+        <motion.video
           ref={videoRef}
           src="/assets/hero.mp4"
           poster="/assets/hero-poster.jpg"
@@ -31,6 +62,7 @@ export const CinematicHero: React.FC = () => {
           loop
           playsInline
           preload="auto"
+          style={{ scale: videoScale }}
           className="w-full h-full object-cover opacity-50 filter contrast-115 brightness-90"
         />
 
@@ -60,8 +92,11 @@ export const CinematicHero: React.FC = () => {
       </motion.div>
 
       {/* Clean, Striking Hero Content with Staggered Entrance */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-12 w-full text-center flex flex-col items-center pt-24 pb-16">
-        
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity }}
+        className="relative z-10 max-w-5xl mx-auto px-6 md:px-12 w-full text-center flex flex-col items-center pt-24 pb-24 sm:pb-16"
+      >
+
         {/* Subtle Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
@@ -75,16 +110,27 @@ export const CinematicHero: React.FC = () => {
 
         {/* Monumental Display Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 28, filter: 'blur(8px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
           className="font-serif text-5xl sm:text-7xl lg:text-8xl text-white font-normal leading-[0.92] mb-8 tracking-tight"
         >
-          Your jewelry deserves better ads.
+          <RevealText delay={0.35} stagger={0.045}>
+            Your jewelry deserves better ads.
+          </RevealText>
           <span className="block italic text-accent font-normal mt-2 drop-shadow-[0_0_35px_rgba(251,255,141,0.25)]">
-            Stop shooting. Start generating.
+            <RevealText delay={0.6} stagger={0.06}>
+              Stop shooting. Start generating.
+            </RevealText>
           </span>
         </motion.h1>
+
+        {/* Mouse-tracked ambient glow behind the headline */}
+        <div
+          ref={glowRef}
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[280px] rounded-full bg-accent/[0.05] blur-[110px] transition-transform duration-700 ease-out will-change-transform"
+          aria-hidden="true"
+        />
 
         {/* Clean, Concise Single-Paragraph Subtitle */}
         <motion.p
@@ -103,21 +149,25 @@ export const CinematicHero: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-wrap items-center justify-center gap-4 mb-16"
         >
-          <a
-            href="#ten-angle-runway"
-            className="px-8 py-4 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.22em] font-semibold hover:bg-white hover:tracking-[0.26em] hover:shadow-[0_0_30px_rgba(251,255,141,0.4)] active:scale-95 transition-all duration-300 shadow-xl flex items-center gap-2 group cursor-pointer"
-          >
-            <span>Explore 12-Angle Runway</span>
-            <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform duration-300" />
-          </a>
+          <Magnetic>
+            <a
+              href="#ten-angle-runway"
+              className="px-8 py-4 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.22em] font-semibold hover:bg-white hover:tracking-[0.26em] hover:shadow-[0_0_30px_rgba(251,255,141,0.4)] active:scale-95 transition-all duration-300 shadow-xl flex items-center gap-2 group cursor-pointer"
+            >
+              <span>Explore 12-Angle Runway</span>
+              <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform duration-300" />
+            </a>
+          </Magnetic>
 
-          <a
-            href="#brief"
-            className="px-8 py-4 rounded-full border border-white/20 text-white hover:border-accent hover:text-accent hover:shadow-[0_0_20px_rgba(251,255,141,0.15)] active:scale-95 font-sans text-xs uppercase tracking-[0.2em] transition-all duration-300 backdrop-blur-sm flex items-center gap-2 group cursor-pointer"
-          >
-            <span>Book 15-Min Demo</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
-          </a>
+          <Magnetic>
+            <a
+              href="#brief"
+              className="px-8 py-4 rounded-full border border-white/20 text-white hover:border-accent hover:text-accent hover:shadow-[0_0_20px_rgba(251,255,141,0.15)] active:scale-95 font-sans text-xs uppercase tracking-[0.2em] transition-all duration-300 backdrop-blur-sm flex items-center gap-2 group cursor-pointer"
+            >
+              <span>Book 15-Min Demo</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
+            </a>
+          </Magnetic>
         </motion.div>
 
         {/* Bottom Minimalist Telemetry Strip */}
@@ -128,18 +178,18 @@ export const CinematicHero: React.FC = () => {
           className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-[11px] font-mono text-white/50 border-t border-white/10 pt-6"
         >
           <span className="text-white/80">48-HOUR TURNAROUND</span>
-          <span className="text-white/20">•</span>
+          <span className="hidden sm:inline text-white/20">•</span>
           <span className="text-accent font-semibold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
             <span>0% FACET DRIFT</span>
           </span>
-          <span className="text-white/20">•</span>
+          <span className="hidden sm:inline text-white/20">•</span>
           <span className="text-white/80">84% PRODUCTION SAVINGS</span>
-          <span className="text-white/20">•</span>
+          <span className="hidden sm:inline text-white/20">•</span>
           <span className="text-white/80">100% COMMERCIAL BUYOUT</span>
         </motion.div>
 
-      </div>
+      </motion.div>
 
       {/* Subtle Scroll Down Indicator */}
       <motion.a

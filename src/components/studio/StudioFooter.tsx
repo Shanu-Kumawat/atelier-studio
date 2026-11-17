@@ -1,12 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, Cpu, ShieldCheck } from 'lucide-react';
+import { scrollToTop } from '../../lib/lenis';
+import { Magnetic } from './Magnetic';
 
 export const StudioFooter: React.FC = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
     <footer className="relative bg-[#020202] text-white border-t border-hairline pt-20 sm:pt-28 pb-12 sm:pb-16 overflow-hidden">
       
@@ -127,14 +125,16 @@ export const StudioFooter: React.FC = () => {
 
           {/* Column 4: System Telemetry & Back to Top (3 cols) */}
           <div className="lg:col-span-3 flex flex-col justify-between items-start lg:items-end">
-            <button
-              onClick={scrollToTop}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono uppercase tracking-widest text-white/70 hover:text-black hover:bg-accent border border-white/15 hover:border-accent hover:shadow-[0_0_20px_rgba(251,255,141,0.25)] active:scale-95 transition-all shadow-sm cursor-pointer group"
-              aria-label="Scroll back to top"
-            >
-              <span>Return to Summit</span>
-              <ArrowUp className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-1" />
-            </button>
+            <Magnetic strength={6}>
+              <button
+                onClick={scrollToTop}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono uppercase tracking-widest text-white/70 hover:text-black hover:bg-accent border border-white/15 hover:border-accent hover:shadow-[0_0_20px_rgba(251,255,141,0.25)] active:scale-95 transition-all shadow-sm cursor-pointer group"
+                aria-label="Scroll back to top"
+              >
+                <span>Return to Summit</span>
+                <ArrowUp className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-1" />
+              </button>
+            </Magnetic>
 
             <div className="text-left lg:text-right mt-8 lg:mt-0">
               <span className="text-[10px] font-mono text-white/40 uppercase block mb-1">

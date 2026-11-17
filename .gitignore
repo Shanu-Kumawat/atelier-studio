@@ -66,3 +66,6 @@ coverage/
 .cache/
 tmp/
 temp/
+
+# ZCode local session artifacts
+.zcode/

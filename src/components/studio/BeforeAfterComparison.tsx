@@ -1,6 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronsLeftRight, ArrowRight, Sparkles } from 'lucide-react';
+import { useCountUp } from '../../hooks/useCountUp';
+import { Magnetic } from './Magnetic';
+
+// Count-up wrapper for the economics numerals
+const CountUpValue: React.FC<{ value: string; className?: string }> = ({ value, className }) => {
+  const { ref, display } = useCountUp<HTMLSpanElement>(value);
+  return (
+    <span ref={ref} className={className}>
+      {display}
+    </span>
+  );
+};
 
 export const BeforeAfterComparison: React.FC = () => {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -105,7 +117,7 @@ export const BeforeAfterComparison: React.FC = () => {
       <div ref={trackRef} className="relative h-[180vh]">
         
         {/* Sticky Viewport Stage (Clean, spacious, uncrowded) */}
-        <div className="sticky top-0 h-screen w-full flex flex-col justify-between py-5 sm:py-7 md:py-9 px-4 sm:px-8 md:px-12 overflow-hidden select-none z-10">
+        <div className="sticky top-0 h-screen w-full flex flex-col justify-between pt-24 sm:pt-28 md:pt-28 pb-6 sm:pb-8 md:pb-9 px-4 sm:px-8 md:px-12 overflow-hidden select-none z-10">
           
           {/* Subtle Ambient Atmosphere Glow */}
           <div className="absolute inset-0 bg-radial-gradient from-accent/[0.035] via-transparent to-transparent pointer-events-none" />
@@ -122,7 +134,8 @@ export const BeforeAfterComparison: React.FC = () => {
             </div>
 
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-tight">
-              From raw phone snap to <span className="italic font-light text-accent">campaign master.</span>
+              From raw phone snap to{' '}
+              <span className="italic font-light text-accent">campaign master.</span>
             </h2>
 
             {/* Luxury Scroll Track Indicator */}
@@ -153,25 +166,25 @@ export const BeforeAfterComparison: React.FC = () => {
               onPointerCancel={handlePointerUp}
             >
               {/* Corner Badge: 01 Raw Sensor (Top-Left) */}
-              <div className="absolute top-4 left-4 z-20 pointer-events-none">
-                <span className={`text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase px-3 py-1 rounded-sm backdrop-blur-md shadow-lg transition-all duration-300 ${
+              <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 pointer-events-none">
+                <span className={`text-[9px] sm:text-[11px] font-mono tracking-[0.25em] uppercase px-2.5 py-1 sm:px-3 rounded-sm backdrop-blur-md shadow-lg transition-all duration-300 ${
                   sliderPos < 50
                     ? 'text-white bg-black/85 border border-white/20'
                     : 'text-white/40 bg-black/60 border border-white/10'
                 }`}>
-                  01 / RAW DESK SENSOR SNAP
+                  01 / RAW<span className="hidden sm:inline"> DESK SENSOR</span> SNAP
                 </span>
               </div>
 
               {/* Corner Badge: 02 4K Atelier Master (Top-Right) */}
-              <div className="absolute top-4 right-4 z-20 pointer-events-none">
-                <span className={`text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase px-3 py-1 rounded-sm backdrop-blur-md shadow-lg flex items-center gap-1.5 transition-all duration-300 ${
+              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 pointer-events-none">
+                <span className={`text-[9px] sm:text-[11px] font-mono tracking-[0.25em] uppercase px-2.5 py-1 sm:px-3 rounded-sm backdrop-blur-md shadow-lg flex items-center gap-1.5 transition-all duration-300 ${
                   sliderPos >= 50
                     ? 'text-accent bg-black/85 border border-accent/40 shadow-[0_0_12px_rgba(251,255,141,0.2)]'
                     : 'text-white/40 bg-black/60 border border-white/10'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${sliderPos >= 50 ? 'bg-accent animate-pulse' : 'bg-white/30'}`} />
-                  <span>02 / 4K ATELIER MASTER STILL</span>
+                  <span><span className="sm:hidden">02 / 4K MASTER</span><span className="hidden sm:inline">02 / 4K ATELIER MASTER STILL</span></span>
                 </span>
               </div>
 
@@ -191,7 +204,7 @@ export const BeforeAfterComparison: React.FC = () => {
                 style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
               >
                 <div
-                  className="w-full h-full transition-transform duration-300 ease-out origin-center"
+                  className="w-full h-full origin-center will-change-transform"
                   style={{ transform: `scale(${macroZoom})` }}
                 >
                   <img
@@ -280,9 +293,10 @@ export const BeforeAfterComparison: React.FC = () => {
             className="group"
           >
             <div className="flex items-baseline justify-center sm:justify-start gap-1.5 overflow-hidden">
-              <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal group-hover:text-accent transition-colors duration-300">
-                ₹19,500
-              </span>
+              <CountUpValue
+                value="₹19,500"
+                className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal group-hover:text-accent transition-colors duration-300"
+              />
               <span className="text-[11px] font-mono text-white/40 uppercase">/ SKU</span>
             </div>
             <div className="text-[11px] font-mono text-accent uppercase tracking-wider font-semibold mt-1 flex items-center justify-center sm:justify-start gap-1.5">
@@ -308,9 +322,10 @@ export const BeforeAfterComparison: React.FC = () => {
             className="group"
           >
             <div className="flex items-baseline justify-center sm:justify-start gap-1.5 overflow-hidden">
-              <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal group-hover:text-accent transition-colors duration-300">
-                48 Hours
-              </span>
+              <CountUpValue
+                value="48 Hours"
+                className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal group-hover:text-accent transition-colors duration-300"
+              />
               <span className="text-[11px] font-mono text-white/40 uppercase">Guaranteed</span>
             </div>
             <div className="text-[11px] font-mono text-accent uppercase tracking-wider font-semibold mt-1 flex items-center justify-center sm:justify-start gap-1.5">
@@ -359,13 +374,15 @@ export const BeforeAfterComparison: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
           className="mt-8 sm:mt-10 text-center"
         >
-          <a
-            href="#brief"
-            className="inline-flex items-center justify-center gap-3 px-9 py-4 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-[0_0_32px_rgba(251,255,141,0.45)] hover:scale-105 active:scale-98"
-          >
-            <span>Commission Free Pilot SKU</span>
-            <ArrowRight className="w-4 h-4" />
-          </a>
+          <Magnetic>
+            <a
+              href="#brief"
+              className="inline-flex items-center justify-center gap-3 px-9 py-4 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-[0_0_32px_rgba(251,255,141,0.45)] hover:scale-105 active:scale-95"
+            >
+              <span>Commission Free Pilot SKU</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </Magnetic>
         </motion.div>
       </div>
 

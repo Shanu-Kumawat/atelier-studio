@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Check, Send, UploadCloud, File, X, Sparkles, ShieldCheck, Phone } from 'lucide-react';
+import { RevealText } from './RevealText';
 
 interface AttachedFile {
   name: string;
@@ -90,7 +91,7 @@ export const BriefIntakePortal: React.FC = () => {
           </div>
 
           <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-tight mb-4">
-            Commission a Studio Drop
+            <RevealText inView>Commission a Studio Drop</RevealText>
           </h2>
 
           <p className="text-white/50 text-xs sm:text-sm font-sans max-w-lg mx-auto font-light leading-relaxed">
@@ -151,30 +152,34 @@ export const BriefIntakePortal: React.FC = () => {
                 <label htmlFor="brief-name" className="block text-xs font-mono uppercase tracking-wider text-white/60 mb-2">
                   Principal Full Name *
                 </label>
-                <input
-                  id="brief-name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Vikramaditya Singhania"
-                  className="w-full bg-transparent border-b border-white/20 focus:border-accent focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
-                />
+                <div className="lux-underline">
+                  <input
+                    id="brief-name"
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Vikramaditya Singhania"
+                    className="w-full bg-transparent border-b border-white/20 focus:border-accent/60 focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
+                  />
+                </div>
               </div>
 
               <div>
                 <label htmlFor="brief-email" className="block text-xs font-mono uppercase tracking-wider text-white/60 mb-2">
                   Confidential Corporate Email *
                 </label>
-                <input
-                  id="brief-email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="v.singhania@maison-heritage.com"
-                  className="w-full bg-transparent border-b border-white/20 focus:border-accent focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
-                />
+                <div className="lux-underline">
+                  <input
+                    id="brief-email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="v.singhania@maison-heritage.com"
+                    className="w-full bg-transparent border-b border-white/20 focus:border-accent/60 focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
+                  />
+                </div>
               </div>
             </div>
 
@@ -184,15 +189,17 @@ export const BriefIntakePortal: React.FC = () => {
                 <label htmlFor="brief-brand" className="block text-xs font-mono uppercase tracking-wider text-white/60 mb-2">
                   Maison / Brand Name *
                 </label>
-                <input
-                  id="brief-brand"
-                  type="text"
-                  required
-                  value={formData.brand}
-                  onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                  placeholder="Singhania & Co. Fine Jewels"
-                  className="w-full bg-transparent border-b border-white/20 focus:border-accent focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
-                />
+                <div className="lux-underline">
+                  <input
+                    id="brief-brand"
+                    type="text"
+                    required
+                    value={formData.brand}
+                    onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                    placeholder="Singhania & Co. Fine Jewels"
+                    className="w-full bg-transparent border-b border-white/20 focus:border-accent/60 focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
+                  />
+                </div>
               </div>
 
               <div>
@@ -200,7 +207,7 @@ export const BriefIntakePortal: React.FC = () => {
                   <span>Direct WhatsApp / Phone *</span>
                   <span className="text-[10px] text-accent lowercase">priority dispatch</span>
                 </label>
-                <div className="relative">
+                <div className="relative lux-underline">
                   <input
                     id="brief-phone"
                     type="tel"
@@ -208,7 +215,7 @@ export const BriefIntakePortal: React.FC = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+91 98200 12345"
-                    className="w-full bg-transparent border-b border-white/20 focus:border-accent focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
+                    className="w-full bg-transparent border-b border-white/20 focus:border-accent/60 focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 font-sans"
                   />
                   <Phone className="w-4 h-4 text-white/30 absolute right-2 top-3 pointer-events-none" />
                 </div>
@@ -269,7 +276,7 @@ export const BriefIntakePortal: React.FC = () => {
                 onClick={() => fileInputRef.current?.click()}
                 className={`p-6 sm:p-8 rounded-sm border-2 border-dashed transition-all duration-300 text-center cursor-pointer ${
                   isDragging
-                    ? 'border-accent bg-accent/[0.06] shadow-[0_0_24px_rgba(251,255,141,0.15)]'
+                    ? 'border-accent bg-accent/[0.06] shadow-[0_0_24px_rgba(251,255,141,0.15)] dropzone-active'
                     : 'border-white/15 bg-white/[0.015] hover:border-white/30 hover:bg-white/[0.03]'
                 }`}
               >
@@ -331,15 +338,17 @@ export const BriefIntakePortal: React.FC = () => {
               <label htmlFor="brief-message" className="block text-xs font-mono uppercase tracking-wider text-white/60 mb-2">
                 Collection Specifications & Timeline Requirements *
               </label>
-              <textarea
-                id="brief-message"
-                rows={3}
-                required
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Mention metal alloys (18K Yellow, Rose, Polki Champagne), gemstone cut (Emerald, Brilliant), target ad aspect ratios, and deadline requirements..."
-                className="w-full bg-transparent border-b border-white/20 focus:border-accent focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 resize-none font-sans"
-              />
+                <div className="lux-underline">
+                  <textarea
+                    id="brief-message"
+                    rows={3}
+                    required
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Mention metal alloys (18K Yellow, Rose, Polki Champagne), gemstone cut (Emerald, Brilliant), target ad aspect ratios, and deadline requirements..."
+                    className="w-full bg-transparent border-b border-white/20 focus:border-accent/60 focus:outline-none text-sm text-white py-2.5 transition-colors placeholder:text-white/20 resize-none font-sans"
+                  />
+                </div>
             </div>
 
             {/* Submit Bar & Security Badges */}

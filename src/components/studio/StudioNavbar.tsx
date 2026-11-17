@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowRight } from 'lucide-react';
+import { scrollToId, scrollToTop } from '../../lib/lenis';
+import { Magnetic } from './Magnetic';
 
 interface NavItem {
   id: string;
@@ -82,10 +84,7 @@ export const StudioNavbar: React.FC = () => {
 
   const scrollToElement = useCallback((targetId: string) => {
     setMobileOpen(false);
-    const element = document.getElementById(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    scrollToId(targetId, targetId === 'hero' ? 0 : -70);
   }, []);
 
   return (
@@ -104,7 +103,7 @@ export const StudioNavbar: React.FC = () => {
             href="#hero"
             onClick={(e) => {
               e.preventDefault();
-              scrollToElement('hero');
+              scrollToTop();
             }}
             className="flex items-center gap-3.5 group cursor-pointer"
             aria-label="ATELIER AI Studio - Return to top"
@@ -158,18 +157,17 @@ export const StudioNavbar: React.FC = () => {
                   e.preventDefault();
                   scrollToElement(item.id);
                 }}
-                className={`relative py-1.5 transition-colors duration-200 cursor-pointer ${
+                className={`group/nav relative py-1.5 transition-colors duration-200 cursor-pointer ${
                   isActive ? 'text-accent font-medium' : 'text-white/60 hover:text-white'
                 }`}
               >
                 <span>{item.label}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="activeNavPip"
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_10px_#FBFF8D]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
+                {/* Accent underline sweep */}
+                <span
+                  className={`absolute bottom-0 left-0 right-0 h-[1px] origin-left scale-x-0 bg-accent shadow-[0_0_8px_rgba(251,255,141,0.6)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/nav:scale-x-100 ${
+                    isActive ? 'scale-x-100' : ''
+                  }`}
+                />
               </a>
             );
           })}
@@ -177,17 +175,19 @@ export const StudioNavbar: React.FC = () => {
 
         {/* Right CTA */}
         <div className="flex items-center space-x-4">
-          <a
-            href="#brief"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToElement('brief');
-            }}
-            className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.22em] font-semibold hover:bg-white hover:shadow-[0_0_25px_rgba(251,255,141,0.35)] active:scale-95 transition-all duration-300 group cursor-pointer"
-          >
-            <span>Commission</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
-          </a>
+          <Magnetic strength={6}>
+            <a
+              href="#brief"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToElement('brief');
+              }}
+              className="hidden sm:inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-accent text-black font-sans text-xs uppercase tracking-[0.22em] font-semibold hover:bg-white hover:shadow-[0_0_25px_rgba(251,255,141,0.35)] active:scale-95 transition-all duration-300 group cursor-pointer"
+            >
+              <span>Commission</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
+            </a>
+          </Magnetic>
 
           {/* Mobile Menu Toggle Button */}
           <button
@@ -209,7 +209,7 @@ export const StudioNavbar: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="lg:hidden absolute top-full left-0 right-0 h-[calc(100dvh-100%)] bg-[#020202]/98 backdrop-blur-3xl border-t border-white/[0.08] shadow-2xl flex flex-col justify-between px-8 py-8 overflow-y-auto"
+            className="lg:hidden absolute top-full left-0 right-0 h-[calc(100dvh-100%)] bg-[#020202]/[0.98] backdrop-blur-3xl border-t border-white/[0.08] shadow-2xl flex flex-col justify-between px-8 py-8 overflow-y-auto"
           >
             <div className="space-y-6">
               <div className="text-[10px] font-mono uppercase tracking-[0.28em] text-white/40 pb-2 border-b border-hairline">

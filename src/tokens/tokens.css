@@ -18,9 +18,104 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Lenis drives smooth scrolling; CSS smooth-scroll would fight it */
+  scroll-behavior: auto;
   background-color: var(--bg-obsidian);
   color: var(--text-primary);
+}
+
+/* Applied by LuxuryCursor on fine pointers only */
+.cursor-none,
+.cursor-none a,
+.cursor-none button,
+.cursor-none input,
+.cursor-none select,
+.cursor-none textarea,
+.cursor-none label {
+  cursor: none;
+}
+
+/* Mouse-tracked spotlight wash on pricing tier cards (--mx/--my set in JS) */
+.spotlight-glow {
+  background: radial-gradient(
+    520px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(251, 255, 141, 0.05),
+    transparent 45%
+  );
+}
+.spotlight-strong .spotlight-glow {
+  background: radial-gradient(
+    520px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(251, 255, 141, 0.09),
+    transparent 45%
+  );
+}
+
+/* Animated accent underline that sweeps in when a field gains focus */
+.lux-underline {
+  position: relative;
+}
+.lux-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--accent-luminous);
+  box-shadow: 0 0 8px rgba(251, 255, 141, 0.55);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.lux-underline:focus-within::after {
+  transform: scaleX(1);
+}
+
+/* Soft breathing pulse on the brief drop-zone while dragging files over it */
+@keyframes dropzone-pulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(251, 255, 141, 0.10); }
+  50% { box-shadow: 0 0 34px rgba(251, 255, 141, 0.28); }
+}
+.dropzone-active {
+  animation: dropzone-pulse 1.4s ease-in-out infinite;
+}
+
+/* While smooth-scrolling, cards glide under a stationary cursor and every
+   passing card fires :hover. The runway engine sets body.is-scrolling so
+   hover-reactive visuals stay frozen until motion settles. */
+body.is-scrolling .runway-card img {
+  transform: none !important;
+}
+body.is-scrolling .runway-card {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+body.is-scrolling .runway-inspect {
+  opacity: 0 !important;
+  transform: translateX(8px) !important;
+}
+body.is-scrolling .runway-glare {
+  opacity: 0 !important;
+}
+
+/* Giant outlined ordinal numerals drifting behind runway cards */
+.runway-numeral {
+  font-size: clamp(7rem, 14vw, 13rem);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(251, 255, 141, 0.22);
+  text-shadow: 0 0 42px rgba(251, 255, 141, 0.06);
+  letter-spacing: -0.02em;
+  will-change: transform;
+}
+
+/* Infinite angle-name ticker (two identical halves, translate -50% loop) */
+.runway-marquee {
+  animation: runway-marquee 46s linear infinite;
+}
+@keyframes runway-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 body {
